@@ -5,23 +5,24 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from '@/components/ui/select';
-import * as SelectPrimitive from '@radix-ui/react-select';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { LOGO_ICONS, HUE_PRESETS } from '../lib/icon-registry';
 import { updateStoreSettings } from '../actions';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
-import { Code } from 'lucide-react';
+import {
+  Palette,
+  Megaphone,
+  LayoutTemplate,
+  Activity,
+  CheckCircle2,
+  Sparkles,
+  ExternalLink,
+  Save,
+  Store as StoreIcon,
+} from 'lucide-react';
 
 interface StoreSettingsPageClientProps {
   initialData: {
@@ -31,6 +32,7 @@ interface StoreSettingsPageClientProps {
     logoColor: string;
     homepageTitle: string;
     homepageDescription: string;
+    metadata?: any;
   } | null;
   initialError: string | null;
 }
@@ -39,40 +41,141 @@ export function StoreSettingsPageClient({
   initialData,
   initialError,
 }: StoreSettingsPageClientProps) {
-  const [name, setName] = useState(initialData?.name || '');
+  // Store Branding
+  const [name, setName] = useState(initialData?.name || 'Openfront Store');
   const [logoIcon, setLogoIcon] = useState(
     initialData?.logoIcon || LOGO_ICONS[0].lightSvg
   );
-  const [logoColor, setLogoColor] = useState(
-    initialData?.logoColor || '0'
+  const [logoColor, setLogoColor] = useState(initialData?.logoColor || '0');
+
+  // Metadata Configurations
+  const metadata = initialData?.metadata || {};
+
+  // Announcement Bar
+  const [announcementEnabled, setAnnouncementEnabled] = useState(
+    metadata.announcementBar?.enabled ?? true
   );
-  const [homepageTitle, setHomepageTitle] = useState(
-    initialData?.homepageTitle || ''
+  const [announcementText, setAnnouncementText] = useState(
+    metadata.announcementBar?.text ||
+      '✨ Free express shipping on orders over $50 | 30-Day Money-Back Guarantee'
   );
-  const [homepageDescription, setHomepageDescription] = useState(
-    initialData?.homepageDescription || ''
+  const [announcementLink, setAnnouncementLink] = useState(
+    metadata.announcementBar?.linkUrl || '/store'
   );
+  const [announcementBg, setAnnouncementBg] = useState(
+    metadata.announcementBar?.bgColor || '#0f172a'
+  );
+  const [announcementTextCol, setAnnouncementTextCol] = useState(
+    metadata.announcementBar?.textColor || '#ffffff'
+  );
+
+  // Hero Banner
+  const [heroHeadline, setHeroHeadline] = useState(
+    metadata.heroBanner?.headline ||
+      initialData?.homepageTitle ||
+      'Modern Commerce Engineered for Performance'
+  );
+  const [heroSubheadline, setHeroSubheadline] = useState(
+    metadata.heroBanner?.subheadline ||
+      initialData?.homepageDescription ||
+      'Explore our latest collection crafted with premium materials and sustainable design.'
+  );
+  const [heroBadge, setHeroBadge] = useState(
+    metadata.heroBanner?.badgeText || 'New Season Collection 2026'
+  );
+  const [heroPrimaryCtaText, setHeroPrimaryCtaText] = useState(
+    metadata.heroBanner?.primaryCtaText || 'Explore Catalog'
+  );
+  const [heroPrimaryCtaLink, setHeroPrimaryCtaLink] = useState(
+    metadata.heroBanner?.primaryCtaLink || '/store'
+  );
+  const [heroSecondaryCtaText, setHeroSecondaryCtaText] = useState(
+    metadata.heroBanner?.secondaryCtaText || 'View Categories'
+  );
+  const [heroSecondaryCtaLink, setHeroSecondaryCtaLink] = useState(
+    metadata.heroBanner?.secondaryCtaLink || '/categories'
+  );
+  const [heroBgImage, setHeroBgImage] = useState(
+    metadata.heroBanner?.bgImageUrl ||
+      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=80'
+  );
+
+  // Section Toggles
+  const [marqueeEnabled, setMarqueeEnabled] = useState(
+    metadata.marquee?.enabled ?? true
+  );
+  const [testimonialsEnabled, setTestimonialsEnabled] = useState(
+    metadata.testimonials?.enabled ?? true
+  );
+  const [trustBadgesEnabled, setTrustBadgesEnabled] = useState(
+    metadata.trustBadges?.enabled ?? true
+  );
+
+  // Analytics & Meta Pixel Full-Funnel
+  const [metaPixelId, setMetaPixelId] = useState(
+    metadata.analyticsConfig?.metaPixelId || ''
+  );
+  const [googleAnalyticsId, setGoogleAnalyticsId] = useState(
+    metadata.analyticsConfig?.googleAnalyticsId || ''
+  );
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSave = async () => {
     if (!initialData?.id) {
-      toast.error('No store found to update');
+      toast.error('No store record found to update.');
       return;
     }
 
     setIsLoading(true);
+
+    const updatedMetadata = {
+      ...metadata,
+      announcementBar: {
+        enabled: announcementEnabled,
+        text: announcementText,
+        linkUrl: announcementLink,
+        bgColor: announcementBg,
+        textColor: announcementTextCol,
+      },
+      heroBanner: {
+        headline: heroHeadline,
+        subheadline: heroSubheadline,
+        badgeText: heroBadge,
+        primaryCtaText: heroPrimaryCtaText,
+        primaryCtaLink: heroPrimaryCtaLink,
+        secondaryCtaText: heroSecondaryCtaText,
+        secondaryCtaLink: heroSecondaryCtaLink,
+        bgImageUrl: heroBgImage,
+      },
+      marquee: {
+        enabled: marqueeEnabled,
+      },
+      testimonials: {
+        enabled: testimonialsEnabled,
+      },
+      trustBadges: {
+        enabled: trustBadgesEnabled,
+      },
+      analyticsConfig: {
+        metaPixelId: metaPixelId.trim(),
+        googleAnalyticsId: googleAnalyticsId.trim(),
+      },
+    };
+
     const result = await updateStoreSettings(initialData.id, {
       name,
       logoIcon,
       logoColor,
-      homepageTitle,
-      homepageDescription,
+      homepageTitle: heroHeadline,
+      homepageDescription: heroSubheadline,
+      metadata: updatedMetadata,
     });
 
     if (result.success) {
-      toast.success('Store settings updated successfully');
+      toast.success('Store & Theme configuration published live successfully!');
     } else {
-      toast.error(result.error || 'Failed to update store settings');
+      toast.error(result.error || 'Failed to update store settings.');
     }
     setIsLoading(false);
   };
@@ -80,182 +183,448 @@ export function StoreSettingsPageClient({
   if (initialError) {
     return (
       <div className="p-6">
-        <div className="text-red-500">Error: {initialError}</div>
+        <div className="text-red-500 font-semibold">Error: {initialError}</div>
       </div>
     );
   }
 
-  // Find matching preset icon, but don't default to first icon if not found
-  const selectedIcon = LOGO_ICONS.find((icon) => icon.lightSvg === logoIcon);
-
   return (
-    <div className="p-6 max-w-2xl">
-      <h1 className="text-2xl font-bold mb-6">Store Settings</h1>
-
-      <div className="space-y-6">
-        {/* Store Name */}
+    <div className="p-6 max-w-5xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
-          <Label htmlFor="store-name">Store Name</Label>
-          <Input
-            id="store-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="mt-2"
-          />
+          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+            <StoreIcon className="w-6 h-6 text-blue-600" />
+            Visual Theme & Storefront Customizer
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Customize branding, announcement banners, homepage visual sections, and full-funnel Meta Pixel tracking.
+          </p>
         </div>
 
-        {/* Logo Icon Selector */}
-        <div>
-          <Label>Logo Icon</Label>
-          <div className="mt-2 flex items-center gap-2">
-            <Select
-              value={selectedIcon?.id || ''}
-              onValueChange={(id) => {
-                const icon = LOGO_ICONS.find((i) => i.id === id);
-                if (icon) setLogoIcon(icon.lightSvg);
-              }}
-            >
-              <SelectPrimitive.Trigger
-                className={cn(
-                  'flex h-12 w-12 shrink-0 rounded-lg border border-input bg-background focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 p-0 overflow-hidden items-center justify-center'
-                )}
-              >
-                <div
-                  dangerouslySetInnerHTML={{ __html: logoIcon }}
-                  style={{ filter: `hue-rotate(${logoColor}deg)` }}
-                  className="[&>svg]:w-6 [&>svg]:h-6"
-                />
-              </SelectPrimitive.Trigger>
-              <SelectContent className="border-border dark:border-blue-700">
-                {LOGO_ICONS.map((icon) => (
-                  <SelectItem key={icon.id} value={icon.id}>
-                    <span className="flex items-center gap-3">
-                      <div
-                        dangerouslySetInnerHTML={{ __html: icon.lightSvg }}
-                        style={{ filter: `hue-rotate(${logoColor}deg)` }}
-                        className="[&>svg]:w-6 [&>svg]:h-6"
-                      />
-                      <span>
-                        <span className="block font-medium text-gray-900 dark:text-gray-100">
-                          {icon.name}
-                        </span>
-                      </span>
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <Button
+          onClick={handleSave}
+          disabled={isLoading}
+          className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+        >
+          <Save className="w-4 h-4" />
+          {isLoading ? 'Publishing...' : 'Save & Publish Live'}
+        </Button>
+      </div>
 
-            {/* SVG Code Editor Popover */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-12 w-12 shrink-0"
-                  type="button"
-                >
-                  <Code className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[500px]" align="start">
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Edit SVG Code</h4>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Edit the SVG code directly. Changes will be reflected in the icon preview.
-                    </p>
-                  </div>
-                  <Textarea
-                    value={logoIcon}
-                    onChange={(e) => setLogoIcon(e.target.value)}
-                    className="font-mono text-xs min-h-[300px]"
-                    placeholder="<svg>...</svg>"
+      {/* Tabs */}
+      <Tabs defaultValue="sections" className="space-y-6">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full h-auto p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+          <TabsTrigger value="sections" className="gap-2 py-2.5">
+            <LayoutTemplate className="w-4 h-4" />
+            <span>Homepage Sections</span>
+          </TabsTrigger>
+          <TabsTrigger value="announcement" className="gap-2 py-2.5">
+            <Megaphone className="w-4 h-4" />
+            <span>Announcement Bar</span>
+          </TabsTrigger>
+          <TabsTrigger value="branding" className="gap-2 py-2.5">
+            <Palette className="w-4 h-4" />
+            <span>Branding & Logo</span>
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="gap-2 py-2.5">
+            <Activity className="w-4 h-4" />
+            <span>Meta Pixel & Tracking</span>
+          </TabsTrigger>
+        </TabsList>
+
+        {/* TAB 1: HOMEPAGE SECTIONS */}
+        <TabsContent value="sections" className="space-y-6">
+          {/* Hero Banner Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-amber-500" />
+                Hero Banner Customization
+              </CardTitle>
+              <CardDescription>
+                Configure the primary visual hero section at the top of your homepage.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="hero-badge">Badge Pill Text</Label>
+                  <Input
+                    id="hero-badge"
+                    value={heroBadge}
+                    onChange={(e) => setHeroBadge(e.target.value)}
+                    placeholder="e.g. New Season Collection 2026"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="hero-bg">Background Image URL</Label>
+                  <Input
+                    id="hero-bg"
+                    value={heroBgImage}
+                    onChange={(e) => setHeroBgImage(e.target.value)}
+                    placeholder="https://images.unsplash.com/..."
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="hero-headline">Main Headline</Label>
+                <Input
+                  id="hero-headline"
+                  value={heroHeadline}
+                  onChange={(e) => setHeroHeadline(e.target.value)}
+                  placeholder="e.g. Modern Commerce Engineered for Performance"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="hero-subheadline">Subheadline / Supporting Copy</Label>
+                <Textarea
+                  id="hero-subheadline"
+                  value={heroSubheadline}
+                  onChange={(e) => setHeroSubheadline(e.target.value)}
+                  rows={2}
+                  placeholder="e.g. Explore our latest collection crafted with premium materials."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border">
+                <div className="space-y-2">
+                  <Label htmlFor="primary-cta-text">Primary CTA Text</Label>
+                  <Input
+                    id="primary-cta-text"
+                    value={heroPrimaryCtaText}
+                    onChange={(e) => setHeroPrimaryCtaText(e.target.value)}
+                    placeholder="e.g. Explore Catalog"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="primary-cta-link">Primary CTA Link</Label>
+                  <Input
+                    id="primary-cta-link"
+                    value={heroPrimaryCtaLink}
+                    onChange={(e) => setHeroPrimaryCtaLink(e.target.value)}
+                    placeholder="e.g. /store"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="secondary-cta-text">Secondary CTA Text</Label>
+                  <Input
+                    id="secondary-cta-text"
+                    value={heroSecondaryCtaText}
+                    onChange={(e) => setHeroSecondaryCtaText(e.target.value)}
+                    placeholder="e.g. View Categories"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="secondary-cta-link">Secondary CTA Link</Label>
+                  <Input
+                    id="secondary-cta-link"
+                    value={heroSecondaryCtaLink}
+                    onChange={(e) => setHeroSecondaryCtaLink(e.target.value)}
+                    placeholder="e.g. /categories"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section Toggles */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Modular Section Controls</CardTitle>
+              <CardDescription>
+                Enable or disable additional conversion sections on your homepage.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-4 rounded-xl border border-border">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-semibold">Infinite Marquee USP Ticker</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Displays scrolling trust points (Fast Shipping, 30-Day Returns, SSL Checkout).
+                  </p>
+                </div>
+                <Switch
+                  checked={marqueeEnabled}
+                  onCheckedChange={setMarqueeEnabled}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-xl border border-border">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-semibold">Customer Testimonials & Reviews</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Displays verified buyer testimonials with 5-star ratings for social proof.
+                  </p>
+                </div>
+                <Switch
+                  checked={testimonialsEnabled}
+                  onCheckedChange={setTestimonialsEnabled}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-xl border border-border">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-semibold">Trust & Security Guarantees</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Highlights Worldwide Delivery, 256-bit SSL, Money-Back Guarantee, and 24/7 Support.
+                  </p>
+                </div>
+                <Switch
+                  checked={trustBadgesEnabled}
+                  onCheckedChange={setTrustBadgesEnabled}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* TAB 2: ANNOUNCEMENT BAR */}
+        <TabsContent value="announcement" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg">Top Announcement Bar</CardTitle>
+                  <CardDescription>
+                    Promote free shipping thresholds, discount codes, or seasonal announcements.
+                  </CardDescription>
+                </div>
+                <Switch
+                  checked={announcementEnabled}
+                  onCheckedChange={setAnnouncementEnabled}
+                />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="announcement-text">Banner Text</Label>
+                <Input
+                  id="announcement-text"
+                  value={announcementText}
+                  onChange={(e) => setAnnouncementText(e.target.value)}
+                  placeholder="e.g. Free express shipping on orders over $50 | Use code WELCOME10"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="announcement-link">Click Action Link (Optional)</Label>
+                <Input
+                  id="announcement-link"
+                  value={announcementLink}
+                  onChange={(e) => setAnnouncementLink(e.target.value)}
+                  placeholder="e.g. /store or /collections/featured"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div className="space-y-2">
+                  <Label htmlFor="announcement-bg">Background Color</Label>
                   <div className="flex items-center gap-2">
-                    <div className="text-sm text-muted-foreground">Preview:</div>
-                    <div
-                      dangerouslySetInnerHTML={{ __html: logoIcon }}
-                      style={{ filter: `hue-rotate(${logoColor}deg)` }}
-                      className="[&>svg]:w-8 [&>svg]:h-8 flex items-center justify-center p-2 border rounded"
+                    <input
+                      type="color"
+                      id="announcement-bg"
+                      value={announcementBg}
+                      onChange={(e) => setAnnouncementBg(e.target.value)}
+                      className="w-10 h-10 rounded-lg border border-border cursor-pointer"
+                    />
+                    <Input
+                      value={announcementBg}
+                      onChange={(e) => setAnnouncementBg(e.target.value)}
+                      className="font-mono text-sm"
                     />
                   </div>
                 </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
 
-        {/* Logo Color Selector */}
-        <div>
-          <Label>Logo Color</Label>
-          <div className="mt-2">
-            <Select
-              value={logoColor}
-              onValueChange={(value) => setLogoColor(value)}
-            >
-              <SelectPrimitive.Trigger
-                className={cn(
-                  'flex h-12 w-12 shrink-0 rounded-lg border border-input bg-background focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 p-0 overflow-hidden items-center justify-center'
-                )}
-              >
-                <SelectValue>
-                  <div
-                    className="w-6 h-6 rounded-full"
-                    style={{
-                      background: `hsl(${(240 + parseInt(logoColor)) % 360}, 70%, 50%)`
-                    }}
-                  />
-                </SelectValue>
-              </SelectPrimitive.Trigger>
-              <SelectContent className="border-border dark:border-blue-700">
-                <div className="grid grid-cols-4 gap-2 p-2">
+                <div className="space-y-2">
+                  <Label htmlFor="announcement-text-col">Text Color</Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      id="announcement-text-col"
+                      value={announcementTextCol}
+                      onChange={(e) => setAnnouncementTextCol(e.target.value)}
+                      className="w-10 h-10 rounded-lg border border-border cursor-pointer"
+                    />
+                    <Input
+                      value={announcementTextCol}
+                      onChange={(e) => setAnnouncementTextCol(e.target.value)}
+                      className="font-mono text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Preview */}
+              <div className="pt-4 border-t border-border">
+                <Label className="text-xs text-muted-foreground mb-2 block">Live Preview</Label>
+                <div
+                  className="py-2.5 px-4 text-center text-xs font-semibold rounded-lg shadow-sm"
+                  style={{ backgroundColor: announcementBg, color: announcementTextCol }}
+                >
+                  {announcementText || 'Announcement text preview'}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* TAB 3: BRANDING & LOGO */}
+        <TabsContent value="branding" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Store Identity & Visuals</CardTitle>
+              <CardDescription>
+                Update your store business name and visual logo accent.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="store-name">Store Name</Label>
+                <Input
+                  id="store-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Apex Apparel"
+                />
+              </div>
+
+              {/* Logo Hue Presets */}
+              <div className="space-y-3">
+                <Label>Brand Accent Preset</Label>
+                <div className="flex flex-wrap gap-2">
                   {HUE_PRESETS.map((preset) => (
-                    <SelectItem
-                      key={preset.value}
-                      value={preset.value.toString()}
-                      className="cursor-pointer p-0 h-12 w-12 flex items-center justify-center [&>span:first-child]:hidden"
+                    <button
+                      key={preset.name}
+                      type="button"
+                      onClick={() => setLogoColor(preset.hue.toString())}
+                      className="px-3 py-1.5 rounded-lg border text-xs font-medium flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                     >
-                      <div
-                        className="w-6 h-6 rounded-full"
-                        style={{
-                          background: `hsl(${(240 + preset.value) % 360}, 70%, 50%)`
-                        }}
+                      <span
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: preset.color }}
                       />
-                    </SelectItem>
+                      <span>{preset.name}</span>
+                    </button>
                   ))}
                 </div>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-        {/* Homepage Title */}
-        <div>
-          <Label htmlFor="homepage-title">Homepage Title</Label>
-          <Input
-            id="homepage-title"
-            value={homepageTitle}
-            onChange={(e) => setHomepageTitle(e.target.value)}
-            className="mt-2"
-          />
-        </div>
+        {/* TAB 4: FULL-FUNNEL META PIXEL & ANALYTICS */}
+        <TabsContent value="analytics" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Activity className="w-5 h-5 text-blue-600" />
+                Full-Funnel Meta (Facebook) & Google Tracking
+              </CardTitle>
+              <CardDescription>
+                Connect your Meta Pixel ID to automatically track all standard e-commerce events across the entire shopping journey.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="meta-pixel-id">Meta (Facebook) Pixel ID</Label>
+                  <Input
+                    id="meta-pixel-id"
+                    value={metaPixelId}
+                    onChange={(e) => setMetaPixelId(e.target.value)}
+                    placeholder="e.g. 123456789012345"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Found in Meta Events Manager &rarr; Data Sources &rarr; Pixel ID.
+                  </p>
+                </div>
 
-        {/* Homepage Description */}
-        <div>
-          <Label htmlFor="homepage-description">Homepage Description</Label>
-          <Input
-            id="homepage-description"
-            value={homepageDescription}
-            onChange={(e) => setHomepageDescription(e.target.value)}
-            className="mt-2"
-          />
-        </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ga4-id">Google Analytics 4 Measurement ID</Label>
+                  <Input
+                    id="ga4-id"
+                    value={googleAnalyticsId}
+                    onChange={(e) => setGoogleAnalyticsId(e.target.value)}
+                    placeholder="e.g. G-XXXXXXXXXX"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Found in Google Analytics &rarr; Admin &rarr; Data Streams.
+                  </p>
+                </div>
+              </div>
 
-        <Button onClick={handleSave} disabled={isLoading}>
-          {isLoading ? 'Saving...' : 'Save Settings'}
-        </Button>
-      </div>
+              {/* Automatic Funnel Tracking Verification */}
+              <div className="pt-4 border-t border-border space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-semibold text-foreground">
+                    Automated Full-Funnel Tracking Status
+                  </h4>
+                  <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-700 border-emerald-200">
+                    Active Out-of-the-Box
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-xs font-bold text-foreground">1. PageView</span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Fires on all landing pages and dynamic route transitions.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-xs font-bold text-foreground">2. ViewContent</span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Fires on product detail pages with product ID, title, and currency value.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-xs font-bold text-foreground">3. AddToCart</span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Fires whenever a customer adds any product variant to their bag.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-xs font-bold text-foreground">4. InitiateCheckout</span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Fires when starting checkout with cart subtotal and line items.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5 sm:col-span-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-xs font-bold text-foreground">5. Purchase</span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Fires on order confirmation page with order ID, final revenue, tax, and item breakdown.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import SkeletonRelatedProducts from "@/features/storefront/modules/skeletons/tem
 import { notFound } from "next/navigation"
 import ProductActionsWrapper from "./product-actions-wrapper"
 import { StoreProduct, StoreRegion } from "@/features/storefront/types/storefront"
+import { TrackProductView } from "../components/TrackProductView"
 
 type ProductTemplateProps = {
   product: StoreProduct
@@ -28,6 +29,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
 
   return (
     <>
+      <TrackProductView product={product} region={region} />
       <div
         className="max-w-[1440px] w-full mx-auto px-6 flex flex-col lg:flex-row lg:items-start py-6 relative"
         data-testid="product-container"

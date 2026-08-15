@@ -4,9 +4,24 @@ import OpenfrontCTA from "@/features/storefront/modules/layout/components/openfr
 import { Metadata } from "next"
 import InteractiveLink from "@/features/storefront/modules/common/components/interactive-link"
 import StorefrontServer from "./StorefrontServer"
+import { getStore } from "@/features/storefront/lib/data/store"
+import { AnnouncementBar } from "@/features/storefront/modules/layout/components/announcement-bar"
+import { AnalyticsScripts } from "@/features/storefront/lib/analytics/AnalyticsScripts"
 
 export async function MainLayout({ children }: { children: React.ReactNode }) {
   const hideBranding = process.env.HIDE_OPENFRONT_BRANDING === 'true'
+  const store = await getStore()
+
+  const announcementConfig = store?.metadata?.announcementBar || {
+    enabled: true,
+    text: "✨ Free express shipping on orders over $50 | 30-Day Money-Back Guarantee",
+    bgColor: "#0f172a",
+    textColor: "#ffffff",
+  }
+
+  const analyticsConfig = store?.metadata?.analyticsConfig || {}
+  const metaPixelId = analyticsConfig.metaPixelId || process.env.NEXT_PUBLIC_META_PIXEL_ID || null
+  const googleAnalyticsId = analyticsConfig.googleAnalyticsId || process.env.NEXT_PUBLIC_GA_ID || null
 
   return (
     <StorefrontServer
@@ -15,6 +30,11 @@ export async function MainLayout({ children }: { children: React.ReactNode }) {
       prefetchCollections={true}
       prefetchCategories={true}
     >
+      <AnalyticsScripts
+        metaPixelId={metaPixelId}
+        googleAnalyticsId={googleAnalyticsId}
+      />
+      <AnnouncementBar config={announcementConfig} />
       <Nav />
       {children}
       <Footer />

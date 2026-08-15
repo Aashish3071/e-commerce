@@ -26,12 +26,15 @@ const fetchCart = async () => {
   return cart;
 };
 
+import { TrackInitiateCheckout } from "@/features/storefront/modules/checkout/components/TrackInitiateCheckout";
+
 export async function CheckoutPage() {
   const cart = await fetchCart();
   const customer = await getUser();
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-[1fr_416px] max-w-[1440px] w-full mx-auto px-6 gap-y-8 sm:gap-x-12 xl:gap-x-40 py-12">
+      <TrackInitiateCheckout cart={cart} />
       <Wrapper cart={cart}>
         <CheckoutForm cart={cart} customer={customer} />
       </Wrapper>

@@ -4,6 +4,7 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import type { StoreOrder } from "@/features/storefront/types/storefront"
 import SkeletonOrderConfirmed from "@/features/storefront/modules/skeletons/templates/skeleton-order-confirmed"
+import { TrackPurchase } from "@/features/storefront/modules/order/components/TrackPurchase"
 
 // Add searchParams to Props
 type Props = {
@@ -31,7 +32,12 @@ export async function OrderConfirmedPage({ params: paramsPromise, searchParams: 
     return notFound()
   }
 
-  return <OrderCompletedTemplate order={order} />
+  return (
+    <>
+      <TrackPurchase order={order} />
+      <OrderCompletedTemplate order={order} />
+    </>
+  )
 }
 
 export function OrderConfirmedLoading() {

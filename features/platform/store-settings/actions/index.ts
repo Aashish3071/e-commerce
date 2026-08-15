@@ -9,9 +9,7 @@ function sanitizeSvg(svg: string): string {
     const result = optimize(svg, {
       plugins: [
         'preset-default',
-        // Remove script elements
         'removeScripts',
-        // Remove event handlers like onclick, onload, etc.
         {
           name: 'removeAttrs',
           params: {
@@ -22,7 +20,6 @@ function sanitizeSvg(svg: string): string {
     });
     return result.data;
   } catch {
-    // If SVGO fails to parse, return empty string to prevent malicious input
     return '';
   }
 }
@@ -33,10 +30,12 @@ export async function getStoreSettings() {
       stores(take: 1) {
         id
         name
+        defaultCurrencyCode
         logoIcon
         logoColor
         homepageTitle
         homepageDescription
+        metadata
       }
     }
   `;
@@ -50,22 +49,28 @@ export async function getStoreSettings() {
   return { success: true, data: response.data?.stores?.[0] || null };
 }
 
-export async function updateStoreSettings(storeId: string, data: {
-  name?: string;
-  logoIcon?: string;
-  logoColor?: string;
-  homepageTitle?: string;
-  homepageDescription?: string;
-}) {
+export async function updateStoreSettings(
+  storeId: string,
+  data: {
+    name?: string;
+    logoIcon?: string;
+    logoColor?: string;
+    homepageTitle?: string;
+    homepageDescription?: string;
+    metadata?: any;
+  }
+) {
   // Sanitize SVG before saving to prevent XSS attacks
-  const sanitizedData = {
+  const sanitizedData: any = {
     ...data,
-    logoIcon: data.logoIcon ? sanitizeSvg(data.logoIcon) : undefined,
   };
 
-  // If SVG sanitization failed (returned empty string), reject the update
-  if (data.logoIcon && !sanitizedData.logoIcon) {
-    return { success: false, error: 'Invalid SVG format' };
+  if (data.logoIcon) {
+    const sanitized = sanitizeSvg(data.logoIcon);
+    if (!sanitized) {
+      return { success: false, error: 'Invalid SVG format' };
+    }
+    sanitizedData.logoIcon = sanitized;
   }
 
   const mutation = `
@@ -77,17 +82,26 @@ export async function updateStoreSettings(storeId: string, data: {
         logoColor
         homepageTitle
         homepageDescription
+        metadata
       }
     }
   `;
 
-  const response = await keystoneClient(mutation, { id: storeId, data: sanitizedData });
+  const response = await keystoneClient(mutation, {
+    id: storeId,
+    data: sanitizedData,
+  });
 
   if (!response.success) {
     return { success: false, error: response.error };
   }
 
-  revalidatePath('/dashboard');
+  // Revalidate both dashboard and storefront
+  try {
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/platform/store');
+    revalidatePath('/', 'layout');
+  } catch (e) {}
 
   return { success: true, data: response.data?.updateStore };
 }

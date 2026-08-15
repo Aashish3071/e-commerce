@@ -13,6 +13,7 @@ import OptionSelect from "./option-select";
 import ProductPrice from "../product-price";
 import MobileActions from "./mobile-actions";
 import { RiLoader2Fill } from "@remixicon/react";
+import { Analytics } from "@/features/storefront/lib/analytics/events";
 
 // Define inline types based on GraphQL schema and component usage
 
@@ -145,12 +146,28 @@ export default function ProductActions({ product, region, disabled, onVariantCha
   const handleAddToCart = async () => {
     if (!variant?.id) return null;
     setIsAdding(true);
-    await addToCart({
-      variantId: variant.id,
-      quantity: 1,
-      countryCode,
-    });
-    setIsAdding(false);
+    try {
+      await addToCart({
+        variantId: variant.id,
+        quantity: 1,
+        countryCode,
+      });
+
+      // Fire full-funnel Meta Pixel & GA4 AddToCart event
+      const calculatedPrice = variant.calculated_price?.calculated_amount || 0;
+      Analytics.addToCart({
+        id: product.id,
+        title: product.title || '',
+        variantId: variant.id,
+        price: calculatedPrice,
+        quantity: 1,
+        currency: region?.currency_code || 'USD',
+      });
+    } catch (err) {
+      console.error('Error adding to cart:', err);
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   const isValidVariant = useMemo(() => {
