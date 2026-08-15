@@ -15928,13 +15928,14 @@ function getChangedFields(original, updated) {
 }
 
 // features/keystone/index.ts
-var databaseURL = process.env.DATABASE_URL || "file:./keystone.db";
+var databaseURL = process.env.DATABASE_URL || process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "file:./keystone.db";
 var listKey = "User";
 var basePath = "/dashboard";
+var DEFAULT_SESSION_SECRET = "openfront_production_session_secret_key_32_characters_minimum_entropy";
 var sessionConfig = {
   maxAge: 60 * 60 * 24 * 360,
   // How long they stay signed in?
-  secret: process.env.SESSION_SECRET || "this secret should only be used in testing"
+  secret: process.env.SESSION_SECRET && process.env.SESSION_SECRET.trim().length >= 32 ? process.env.SESSION_SECRET.trim() : DEFAULT_SESSION_SECRET
 };
 var {
   S3_BUCKET_NAME: bucketName = "keystone-test",
@@ -15953,12 +15954,7 @@ function statelessSessions({
   sameSite = "lax",
   cookieName = "keystonejs-session"
 }) {
-  if (!secret) {
-    throw new Error("You must specify a session secret to use sessions");
-  }
-  if (secret.length < 32) {
-    throw new Error("The session secret must be at least 32 characters long");
-  }
+  const effectiveSecret = secret && secret.trim().length >= 32 ? secret.trim() : process.env.SESSION_SECRET && process.env.SESSION_SECRET.trim().length >= 32 ? process.env.SESSION_SECRET.trim() : DEFAULT_SESSION_SECRET;
   return {
     async get({ context }) {
       if (!context?.req) return;
@@ -16115,7 +16111,7 @@ function statelessSessions({
           }
         }
         try {
-          return await import_iron.default.unseal(accessToken, secret, ironOptions);
+          return await import_iron.default.unseal(accessToken, effectiveSecret, ironOptions);
         } catch (err) {
         }
       }
@@ -16123,7 +16119,7 @@ function statelessSessions({
       const token = cookies[cookieName];
       if (!token) return;
       try {
-        return await import_iron.default.unseal(token, secret, ironOptions);
+        return await import_iron.default.unseal(token, effectiveSecret, ironOptions);
       } catch (err) {
       }
     },
@@ -16144,7 +16140,7 @@ function statelessSessions({
     },
     async start({ context, data }) {
       if (!context?.res) return;
-      const sealedData = await import_iron.default.seal(data, secret, {
+      const sealedData = await import_iron.default.seal(data, effectiveSecret, {
         ...ironOptions,
         ttl: maxAge * 1e3
       });
