@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "migrate:gen": "keystone build --no-ui && tsx features/keystone/view-order/generate-view-order.ts && keystone prisma migrate dev",
-    "migrate": "prisma migrate deploy"
+    "migrate": "node scripts/migrate.mjs"
   },
   "dependencies": {
     "@ai-sdk/mcp": "^1.0.13",

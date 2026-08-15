@@ -11,8 +11,20 @@ export async function getBaseUrl(): Promise<string> {
     return window.location.origin;
   }
 
-  // Server-side: try to get from headers
+  // Server-side: try to get from environment or headers
   if (typeof process !== 'undefined') {
+    if (process.env.NEXT_PUBLIC_BACKEND_URL) {
+      return process.env.NEXT_PUBLIC_BACKEND_URL.replace(/\/+$/, '');
+    }
+
+    if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+      return `https://${process.env.NEXT_PUBLIC_VERCEL_URL.replace(/\/+$/, '')}`;
+    }
+
+    if (process.env.VERCEL_URL) {
+      return `https://${process.env.VERCEL_URL.replace(/\/+$/, '')}`;
+    }
+
     try {
       // Import headers from next/headers (only works in app directory)
       const headersList = await headers();

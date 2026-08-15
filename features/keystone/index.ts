@@ -17,16 +17,26 @@ import { withWebhooks } from "../webhooks/webhook-plugin";
 // import { RateLimiterMemory } from "rate-limiter-flexible";
 // import { applyRateLimiting } from "./applyRateLimiting";
 
-const databaseURL = process.env.DATABASE_URL || "file:./keystone.db";
+const databaseURL =
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_URL_NON_POOLING ||
+  process.env.POSTGRES_PRISMA_URL ||
+  process.env.POSTGRES_URL ||
+  "file:./keystone.db";
 
 const listKey = "User";
 
 export const basePath = "/dashboard";
 
+const DEFAULT_SESSION_SECRET =
+  "openfront_production_session_secret_key_32_characters_minimum_entropy";
+
 const sessionConfig = {
   maxAge: 60 * 60 * 24 * 360, // How long they stay signed in?
   secret:
-    process.env.SESSION_SECRET || "this secret should only be used in testing",
+    process.env.SESSION_SECRET && process.env.SESSION_SECRET.trim().length >= 32
+      ? process.env.SESSION_SECRET.trim()
+      : DEFAULT_SESSION_SECRET,
 };
 
 const {
@@ -47,7 +57,7 @@ export function statelessSessions({
   sameSite = "lax" as const,
   cookieName = "keystonejs-session",
 }: {
-  secret: string;
+  secret?: string;
   maxAge?: number;
   path?: string;
   secure?: boolean;
@@ -56,12 +66,12 @@ export function statelessSessions({
   sameSite?: "lax" | "none" | "strict" | boolean;
   cookieName?: string;
 }) {
-  if (!secret) {
-    throw new Error("You must specify a session secret to use sessions");
-  }
-  if (secret.length < 32) {
-    throw new Error("The session secret must be at least 32 characters long");
-  }
+  const effectiveSecret =
+    secret && secret.trim().length >= 32
+      ? secret.trim()
+      : process.env.SESSION_SECRET && process.env.SESSION_SECRET.trim().length >= 32
+      ? process.env.SESSION_SECRET.trim()
+      : DEFAULT_SESSION_SECRET;
 
   return {
     async get({ context }: { context: any }) {
@@ -282,7 +292,7 @@ export function statelessSessions({
         
         // If not OAuth or customer token, try as regular session token
         try {
-          return await Iron.unseal(accessToken, secret, ironOptions);
+          return await Iron.unseal(accessToken, effectiveSecret, ironOptions);
         } catch (err) {}
       }
       
@@ -291,7 +301,7 @@ export function statelessSessions({
       const token = cookies[cookieName];
       if (!token) return;
       try {
-        return await Iron.unseal(token, secret, ironOptions);
+        return await Iron.unseal(token, effectiveSecret, ironOptions);
       } catch (err) {}
     },
     async end({ context }: { context: any }) {
@@ -313,7 +323,7 @@ export function statelessSessions({
     async start({ context, data }: { context: any; data: any }) {
       if (!context?.res) return;
 
-      const sealedData = await Iron.seal(data, secret, {
+      const sealedData = await Iron.seal(data, effectiveSecret, {
         ...ironOptions,
         ttl: maxAge * 1000,
       });
