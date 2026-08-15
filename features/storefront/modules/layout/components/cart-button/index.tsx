@@ -1,4 +1,4 @@
-import CartDropdown from "../cart-dropdown";
+import { CartDrawer } from "../cart-drawer";
 import { retrieveCart } from "@/features/storefront/lib/data/cart";
 
 const fetchCart = async () => {
@@ -14,5 +14,5 @@ const fetchCart = async () => {
 export default async function CartButton() {
   const cart = await fetchCart();
 
-  return <CartDropdown cart={cart} />;
+  return <CartDrawer cart={cart} />;
 }

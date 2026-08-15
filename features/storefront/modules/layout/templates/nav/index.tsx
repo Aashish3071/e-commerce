@@ -6,6 +6,7 @@ import LocalizedClientLink from '@/features/storefront/modules/common/components
 import CartButton from '@/features/storefront/modules/layout/components/cart-button';
 import SideMenu from '@/features/storefront/modules/layout/components/side-menu';
 import Logo from '@/features/storefront/modules/layout/components/logo';
+import { SearchModal } from '@/features/storefront/modules/layout/components/search-modal';
 
 export default async function Nav() {
   const { regions } = await listRegions();
@@ -24,7 +25,8 @@ export default async function Nav() {
             <Logo />
           </div>
 
-          <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
+          <div className="flex items-center gap-x-4 sm:gap-x-6 h-full flex-1 basis-0 justify-end">
+            <SearchModal />
             <div className="hidden lg:flex items-center gap-x-6 h-full">
               <LocalizedClientLink
                 className="hover:text-foreground cursor-pointer"

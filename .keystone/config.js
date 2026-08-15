@@ -15934,15 +15934,14 @@ function getCleanDatabaseUrl() {
     process.env.DATABASE_URL_UNPOOLED,
     process.env.POSTGRES_URL_NON_POOLING,
     process.env.POSTGRES_PRISMA_URL,
-    process.env.POSTGRES_URL,
+    process.env.POSTGRES_URL
   ];
-
   for (const raw of candidates) {
-    if (!raw || typeof raw !== 'string') continue;
+    if (!raw || typeof raw !== "string") continue;
     let cleaned = raw.trim();
-    cleaned = cleaned.replace(/^["']+|["']+$/g, '');
-    cleaned = cleaned.replace(/^psql\s+["']?/, '').replace(/["']?$/, '').trim();
-    if (cleaned.startsWith('postgresql://') || cleaned.startsWith('postgres://')) {
+    cleaned = cleaned.replace(/^["']+|["']+$/g, "");
+    cleaned = cleaned.replace(/^psql\s+["']?/, "").replace(/["']?$/, "").trim();
+    if (cleaned.startsWith("postgresql://") || cleaned.startsWith("postgres://")) {
       return cleaned;
     }
   }

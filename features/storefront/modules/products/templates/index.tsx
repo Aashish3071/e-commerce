@@ -11,6 +11,7 @@ import { notFound } from "next/navigation"
 import ProductActionsWrapper from "./product-actions-wrapper"
 import { StoreProduct, StoreRegion } from "@/features/storefront/types/storefront"
 import { TrackProductView } from "../components/TrackProductView"
+import { StickyCartBar } from "../components/sticky-cart-bar"
 
 type ProductTemplateProps = {
   product: StoreProduct
@@ -87,6 +88,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           <RelatedProducts product={product} countryCode={countryCode} />
         </Suspense>
       </div>
+      <StickyCartBar product={product} region={region} selectedVariant={null} />
     </>
   )
 }

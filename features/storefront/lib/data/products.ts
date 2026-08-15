@@ -357,3 +357,56 @@ export const getProductsListByPrice = cache(async function ({
     queryParams,
   };
 });
+
+export const searchProducts = cache(async function ({
+  query,
+  limit = 8,
+}: {
+  query: string;
+  limit?: number;
+}) {
+  if (!query || query.trim().length === 0) {
+    return [];
+  }
+
+  const SEARCH_QUERY = gql`
+    query SearchProducts($search: String!, $limit: Int!) {
+      products(
+        where: {
+          OR: [
+            { title: { contains: $search, mode: insensitive } }
+            { description: { contains: $search, mode: insensitive } }
+          ]
+        }
+        take: $limit
+      ) {
+        id
+        title
+        handle
+        thumbnail
+        productVariants(take: 1) {
+          id
+          title
+          prices(take: 1) {
+            amount
+            currency {
+              code
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await openfrontClient.request(SEARCH_QUERY, {
+      search: query.trim(),
+      limit,
+    });
+    return data?.products || [];
+  } catch (e) {
+    console.error('Search error:', e);
+    return [];
+  }
+});
+

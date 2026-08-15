@@ -1,12 +1,36 @@
 "use client"
 
-import { motion, AnimatePresence } from "framer-motion"
 import { Check } from 'lucide-react'
 import { onlyUnique } from "../../../../lib/util/only-unique";
 import React from "react";
 
 const SIZE_ORDER = {
   "XXS": 1, "XS": 2, "S": 3, "M": 4, "L": 5, "XL": 6, "XXL": 7, "XXXL": 8
+};
+
+const COLOR_MAP: Record<string, string> = {
+  black: '#0f172a',
+  white: '#ffffff',
+  red: '#ef4444',
+  blue: '#3b82f6',
+  green: '#22c55e',
+  navy: '#1e3a8a',
+  gray: '#6b7280',
+  grey: '#6b7280',
+  beige: '#d4b996',
+  brown: '#78350f',
+  yellow: '#eab308',
+  orange: '#f97316',
+  purple: '#a855f7',
+  pink: '#ec4899',
+  gold: '#eab308',
+  silver: '#94a3b8',
+  olive: '#556b2f',
+  charcoal: '#374151',
+  sand: '#e2d4b7',
+  cream: '#fdfbf7',
+  indigo: '#4f46e5',
+  teal: '#0d9488',
 };
 
 type OptionSelectProps = {
@@ -26,6 +50,8 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
   "data-testid": dataTestId,
   disabled,
 }) => {
+  const isColor = title.toLowerCase().includes("color") || title.toLowerCase().includes("colour");
+
   const filteredOptions = option.productOptionValues
     .map((v: any) => v.value)
     .filter(onlyUnique)
@@ -37,81 +63,75 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
     });
 
   return (
-    <div className="flex flex-col gap-y-3">
-      <span className="text-sm">Select {title}</span>
-      <div className="flex flex-wrap justify-start gap-3" data-testid={dataTestId}>
+    <div className="flex flex-col gap-y-2.5">
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-semibold text-foreground">
+          {title}: <span className="font-normal text-muted-foreground">{current || 'Select one'}</span>
+        </span>
+        {title.toLowerCase() === 'size' && (
+          <span className="text-[11px] text-blue-600 dark:text-blue-400 font-medium underline cursor-pointer hover:opacity-80">
+            Size Guide
+          </span>
+        )}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2.5" data-testid={dataTestId}>
         {filteredOptions.map((v: any) => {
           const isSelected = current === v;
+          const colorHex = COLOR_MAP[v.toLowerCase().trim()];
+
+          // Visual Color Swatch
+          if (isColor) {
+            return (
+              <button
+                key={v}
+                type="button"
+                onClick={() => updateOption({ [option.id]: v })}
+                disabled={disabled}
+                title={v}
+                className={`
+                  group relative flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 border
+                  ${
+                    isSelected
+                      ? 'border-foreground bg-slate-100 dark:bg-slate-800 text-foreground ring-1 ring-foreground'
+                      : 'border-border bg-background text-muted-foreground hover:border-foreground/60'
+                  }
+                `}
+              >
+                <span
+                  className="w-3.5 h-3.5 rounded-full border border-black/20 shrink-0 shadow-inner"
+                  style={{ backgroundColor: colorHex || '#94a3b8' }}
+                />
+                <span>{v}</span>
+                {isSelected && <Check className="w-3 h-3 text-foreground ml-0.5" />}
+              </button>
+            );
+          }
+
+          // Size / Variant Pill
           return (
-            <motion.button
+            <button
               key={v}
+              type="button"
               onClick={() => updateOption({ [option.id]: v })}
               disabled={disabled}
-              initial={false}
-              animate={{
-                backgroundColor: isSelected ? "#2a1711" : "#ffffff",
-              }}
-              whileHover={{
-                backgroundColor: isSelected ? "#2a1711" : "#f1f1f1",
-              }}
-              whileTap={{
-                backgroundColor: isSelected ? "#1f1209" : "rgba(39, 39, 42, 0.9)",
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 500,
-                damping: 30,
-                mass: 0.5,
-                backgroundColor: { duration: 0.1 },
-              }}
               className={`
-                inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                whitespace-nowrap overflow-hidden ring-1 ring-inset
-                ${isSelected
-                  ? "text-primary-foreground ring-primary"
-                  : "text-muted-foreground ring-border"}
+                min-w-[44px] h-10 px-3.5 rounded-xl text-xs font-semibold transition-all duration-150 border flex items-center justify-center
+                ${
+                  isSelected
+                    ? 'border-foreground bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm'
+                    : 'border-border bg-background text-foreground hover:border-foreground/60'
+                }
               `}
               data-testid="option-button"
             >
-              <motion.div
-                className="relative flex items-center"
-                animate={{
-                  width: isSelected ? "auto" : "100%",
-                  paddingRight: isSelected ? "1.5rem" : "0",
-                }}
-                transition={{
-                  ease: [0.175, 0.885, 0.32, 1.275],
-                  duration: 0.3,
-                }}
-              >
-                <span>{v}</span>
-                <AnimatePresence>
-                  {isSelected && (
-                    <motion.span
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                        mass: 0.5
-                      }}
-                      className="absolute right-0"
-                    >
-                      <div className="w-3.5 h-3.5 rounded-full bg-primary-foreground flex items-center justify-center">
-                        <Check className="w-2.5 h-2.5 text-primary" strokeWidth={1.5} />
-                      </div>
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            </motion.button>
+              <span>{v}</span>
+            </button>
           );
         })}
       </div>
     </div>
   );
-}
+};
 
 export default OptionSelect;
