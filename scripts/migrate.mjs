@@ -13,12 +13,22 @@ function cleanUrl(url) {
 
 function resolvePostgresUrl() {
   const envVars = [
-    { key: 'DATABASE_URL', val: process.env.DATABASE_URL },
+    { key: 'DATABASE_URL_UNPOOLED', val: process.env.DATABASE_URL_UNPOOLED },
     { key: 'POSTGRES_URL_NON_POOLING', val: process.env.POSTGRES_URL_NON_POOLING },
+    { key: 'DATABASE_URL', val: process.env.DATABASE_URL },
     { key: 'POSTGRES_PRISMA_URL', val: process.env.POSTGRES_PRISMA_URL },
     { key: 'POSTGRES_URL', val: process.env.POSTGRES_URL },
   ];
 
+  // First priority for migrations: unpooled connection (avoids PgBouncer advisory lock limits)
+  for (const item of envVars) {
+    const cleaned = cleanUrl(item.val);
+    if ((cleaned.startsWith('postgresql://') || cleaned.startsWith('postgres://')) && !cleaned.includes('-pooler')) {
+      return { url: cleaned, source: item.key };
+    }
+  }
+
+  // Second priority: any valid postgres connection URL
   for (const item of envVars) {
     const cleaned = cleanUrl(item.val);
     if (cleaned.startsWith('postgresql://') || cleaned.startsWith('postgres://')) {
@@ -26,7 +36,7 @@ function resolvePostgresUrl() {
     }
   }
 
-  // If none matched the protocol, check if any non-file string was supplied
+  // Check if any non-file string was supplied that might have an invalid protocol
   for (const item of envVars) {
     const cleaned = cleanUrl(item.val);
     if (cleaned && !cleaned.startsWith('file:')) {
