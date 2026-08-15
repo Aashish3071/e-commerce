@@ -356,7 +356,8 @@ export const searchProducts = cache(async function ({
         where: {
           OR: [
             { title: { contains: $search, mode: insensitive } }
-            { description: { contains: $search, mode: insensitive } }
+            { subtitle: { contains: $search, mode: insensitive } }
+            { handle: { contains: $search, mode: insensitive } }
           ]
         }
         take: $limit
@@ -369,6 +370,7 @@ export const searchProducts = cache(async function ({
           id
           title
           prices(take: 1) {
+            id
             amount
             currency {
               code

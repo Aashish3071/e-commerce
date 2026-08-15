@@ -8,20 +8,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { LOGO_ICONS, HUE_PRESETS } from '../lib/icon-registry';
 import { updateStoreSettings } from '../actions';
 import { toast } from 'sonner';
+import Link from 'next/link';
 import {
   Palette,
   Megaphone,
   LayoutTemplate,
-  Activity,
-  CheckCircle2,
   Sparkles,
-  ExternalLink,
   Save,
   Store as StoreIcon,
+  Activity,
+  ArrowRight,
 } from 'lucide-react';
 
 interface StoreSettingsPageClientProps {
@@ -111,14 +110,6 @@ export function StoreSettingsPageClient({
     metadata.trustBadges?.enabled ?? true
   );
 
-  // Analytics & Meta Pixel Full-Funnel
-  const [metaPixelId, setMetaPixelId] = useState(
-    metadata.analyticsConfig?.metaPixelId || ''
-  );
-  const [googleAnalyticsId, setGoogleAnalyticsId] = useState(
-    metadata.analyticsConfig?.googleAnalyticsId || ''
-  );
-
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSave = async () => {
@@ -157,10 +148,6 @@ export function StoreSettingsPageClient({
       trustBadges: {
         enabled: trustBadgesEnabled,
       },
-      analyticsConfig: {
-        metaPixelId: metaPixelId.trim(),
-        googleAnalyticsId: googleAnalyticsId.trim(),
-      },
     };
 
     const result = await updateStoreSettings(initialData.id, {
@@ -189,7 +176,7 @@ export function StoreSettingsPageClient({
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-6">
+    <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
@@ -198,7 +185,7 @@ export function StoreSettingsPageClient({
             Visual Theme & Storefront Customizer
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Customize branding, announcement banners, homepage visual sections, and full-funnel Meta Pixel tracking.
+            Customize branding, announcement banners, and modular homepage sections.
           </p>
         </div>
 
@@ -212,24 +199,42 @@ export function StoreSettingsPageClient({
         </Button>
       </div>
 
+      {/* Quick link banner to Integrations */}
+      <div className="p-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-800/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-blue-600 text-white shrink-0">
+            <Activity className="w-4 h-4" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-foreground">Looking for Meta Pixel & Google Analytics tracking?</h4>
+            <p className="text-xs text-muted-foreground">
+              Manage ad attribution, GA4, TikTok Pixel, and marketing integrations under the Apps & Integrations hub.
+            </p>
+          </div>
+        </div>
+
+        <Button asChild variant="outline" size="sm" className="text-xs shrink-0 gap-1.5 border-blue-300">
+          <Link href="/dashboard/platform/apps">
+            <span>Manage Integrations</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </Button>
+      </div>
+
       {/* Tabs */}
       <Tabs defaultValue="sections" className="space-y-6">
-        <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full h-auto p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+        <TabsList className="grid grid-cols-3 w-full sm:w-[480px] p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
           <TabsTrigger value="sections" className="gap-2 py-2.5">
             <LayoutTemplate className="w-4 h-4" />
-            <span>Homepage Sections</span>
+            <span>Sections</span>
           </TabsTrigger>
           <TabsTrigger value="announcement" className="gap-2 py-2.5">
             <Megaphone className="w-4 h-4" />
-            <span>Announcement Bar</span>
+            <span>Announcement</span>
           </TabsTrigger>
           <TabsTrigger value="branding" className="gap-2 py-2.5">
             <Palette className="w-4 h-4" />
-            <span>Branding & Logo</span>
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="gap-2 py-2.5">
-            <Activity className="w-4 h-4" />
-            <span>Meta Pixel & Tracking</span>
+            <span>Branding</span>
           </TabsTrigger>
         </TabsList>
 
@@ -511,114 +516,6 @@ export function StoreSettingsPageClient({
                       <span>{preset.name}</span>
                     </button>
                   ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* TAB 4: FULL-FUNNEL META PIXEL & ANALYTICS */}
-        <TabsContent value="analytics" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Activity className="w-5 h-5 text-blue-600" />
-                Full-Funnel Meta (Facebook) & Google Tracking
-              </CardTitle>
-              <CardDescription>
-                Connect your Meta Pixel ID to automatically track all standard e-commerce events across the entire shopping journey.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="meta-pixel-id">Meta (Facebook) Pixel ID</Label>
-                  <Input
-                    id="meta-pixel-id"
-                    value={metaPixelId}
-                    onChange={(e) => setMetaPixelId(e.target.value)}
-                    placeholder="e.g. 123456789012345"
-                  />
-                  <p className="text-[11px] text-muted-foreground">
-                    Found in Meta Events Manager &rarr; Data Sources &rarr; Pixel ID.
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="ga4-id">Google Analytics 4 Measurement ID</Label>
-                  <Input
-                    id="ga4-id"
-                    value={googleAnalyticsId}
-                    onChange={(e) => setGoogleAnalyticsId(e.target.value)}
-                    placeholder="e.g. G-XXXXXXXXXX"
-                  />
-                  <p className="text-[11px] text-muted-foreground">
-                    Found in Google Analytics &rarr; Admin &rarr; Data Streams.
-                  </p>
-                </div>
-              </div>
-
-              {/* Automatic Funnel Tracking Verification */}
-              <div className="pt-4 border-t border-border space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-foreground">
-                    Automated Full-Funnel Tracking Status
-                  </h4>
-                  <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-700 border-emerald-200">
-                    Active Out-of-the-Box
-                  </Badge>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-xs font-bold text-foreground">1. PageView</span>
-                      <p className="text-[11px] text-muted-foreground">
-                        Fires on all landing pages and dynamic route transitions.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-xs font-bold text-foreground">2. ViewContent</span>
-                      <p className="text-[11px] text-muted-foreground">
-                        Fires on product detail pages with product ID, title, and currency value.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-xs font-bold text-foreground">3. AddToCart</span>
-                      <p className="text-[11px] text-muted-foreground">
-                        Fires whenever a customer adds any product variant to their bag.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-xs font-bold text-foreground">4. InitiateCheckout</span>
-                      <p className="text-[11px] text-muted-foreground">
-                        Fires when starting checkout with cart subtotal and line items.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5 sm:col-span-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-xs font-bold text-foreground">5. Purchase</span>
-                      <p className="text-[11px] text-muted-foreground">
-                        Fires on order confirmation page with order ID, final revenue, tax, and item breakdown.
-                      </p>
-                    </div>
-                  </div>
                 </div>
               </div>
             </CardContent>

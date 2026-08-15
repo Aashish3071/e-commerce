@@ -1,397 +1,426 @@
-'use client'
+'use client';
 
-import React, { useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { ChevronRight, ChevronDown, Plus, Loader2 } from "lucide-react"
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { createOpenshipOAuthApp, updateOAuthAppRedirectUris } from "../actions"
-import { toast } from "sonner"
-import { MarketplaceInstallDialog } from "../components/MarketplaceInstallDialog"
+  Activity,
+  CheckCircle2,
+  Save,
+  Globe,
+  ShoppingBag,
+  ExternalLink,
+  Layers,
+  Sparkles,
+  Zap,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { updateMarketingIntegrations } from '../actions';
+import { MarketplaceInstallDialog } from '../components/MarketplaceInstallDialog';
 
-// Available apps that can be activated
 const AVAILABLE_APPS = [
   {
     id: 'openship-shop',
     title: 'Openship Shop',
     description: 'Connect to Openship to manage your orders and sync products from connected shops.',
     type: 'shop' as const,
-    svgUrl: 'https://openship.org/images/integrations/openship.svg'
+    svgUrl: 'https://openship.org/images/integrations/openship.svg',
   },
   {
-    id: 'openship-channel', 
+    id: 'openship-channel',
     title: 'Openship Channel',
     description: 'Allow Openship to use this store as a fulfillment channel for order processing.',
     type: 'channel' as const,
-    svgUrl: 'https://openship.org/images/integrations/openship.svg'
-  }
-]
-
-
-interface AvailableApp {
-  id: string
-  title: string
-  description: string
-  type: 'shop' | 'channel'
-  svgUrl: string
-}
-
-interface ExistingApp {
-  id: string
-  name: string
-  description?: string
-  clientId: string
-  clientSecret: string
-  redirectUris: string[]
-  scopes: string[]
-  status: 'active' | 'inactive'
-  metadata?: Record<string, any>
-}
-
-// Helper function to get SVG URL for an installed app based on its metadata
-const getAppSvgUrl = (app: ExistingApp): string | null => {
-  if (!app.metadata?.type || !app.metadata?.platform) return null
-  
-  // Match based on platform and type
-  if (app.metadata.platform === 'openship') {
-    const marketplaceApp = AVAILABLE_APPS.find(marketApp => 
-      marketApp.id === `openship-${app.metadata?.type}`
-    )
-    return marketplaceApp?.svgUrl || null
-  }
-  
-  return null
-}
+    svgUrl: 'https://openship.org/images/integrations/openship.svg',
+  },
+];
 
 interface AppsPageClientProps {
-  existingApps: ExistingApp[]
+  existingApps: any[];
+  marketingData?: {
+    storeId: string;
+    analyticsConfig: {
+      metaPixelId?: string;
+      metaCapiToken?: string;
+      googleAnalyticsId?: string;
+      tiktokPixelId?: string;
+      gtmId?: string;
+      metaPixelEnabled?: boolean;
+      gaEnabled?: boolean;
+    };
+  } | null;
 }
 
-interface AvailableAppCardProps {
-  app: AvailableApp
-  isActivated: boolean
-  onActivate: () => void
-}
+export function AppsPageClient({ existingApps, marketingData }: AppsPageClientProps) {
+  // Marketing Config State
+  const initialConfig = marketingData?.analyticsConfig || {};
+  const [metaPixelId, setMetaPixelId] = useState(initialConfig.metaPixelId || '');
+  const [metaCapiToken, setMetaCapiToken] = useState(initialConfig.metaCapiToken || '');
+  const [metaPixelEnabled, setMetaPixelEnabled] = useState(initialConfig.metaPixelEnabled ?? true);
 
-const AvailableAppCard = ({ app, isActivated, onActivate }: AvailableAppCardProps) => {
-  return (
-    <Card className="p-6 border-transparent ring-1 ring-foreground/10">
-      <div className="relative">
-        <div className="space-y-4">
-          <img 
-            src={app.svgUrl} 
-            alt={`${app.title} logo`}
-            className="size-12"
-          />
-          <div className="space-y-2">
-            <h3 className="text-base font-medium">{app.title}</h3>
-            <p className="text-muted-foreground line-clamp-2 text-sm">{app.description}</p>
-          </div>
-        </div>
+  const [googleAnalyticsId, setGoogleAnalyticsId] = useState(initialConfig.googleAnalyticsId || '');
+  const [gaEnabled, setGaEnabled] = useState(initialConfig.gaEnabled ?? true);
 
-        <div className="flex gap-3 pt-6">
-          <Button 
-            variant="outline"
-            size="sm" 
-            className="gap-1 pr-2"
-            onClick={onActivate}
-            disabled={isActivated}
-          >
-            {isActivated ? 'Installed' : 'Install'}
-            {!isActivated && <ChevronRight className="ml-0 !size-3.5 opacity-50" />}
-          </Button>
-        </div>
-      </div>
-    </Card>
-  )
-}
+  const [tiktokPixelId, setTiktokPixelId] = useState(initialConfig.tiktokPixelId || '');
+  const [gtmId, setGtmId] = useState(initialConfig.gtmId || '');
 
-interface ExistingAppCardProps {
-  app: ExistingApp
-  onInstall: (app?: ExistingApp) => void
-  onRedirectUrisUpdate: (appId: string, redirectUris: string[]) => void
-}
+  const [isSaving, setIsSaving] = useState(false);
+  const [installingApp, setInstallingApp] = useState<any | null>(null);
 
-const ExistingAppCard = ({ app, onInstall, onRedirectUrisUpdate }: ExistingAppCardProps) => {
-  const svgUrl = getAppSvgUrl(app)
-  const [showAddUrlDialog, setShowAddUrlDialog] = useState(false)
-  const [newRedirectUrl, setNewRedirectUrl] = useState('')
-  const [isUpdating, setIsUpdating] = useState(false)
-  
-  const handleAddRedirectUrl = async () => {
-    if (!newRedirectUrl.trim()) return
-    
-    setIsUpdating(true)
-    try {
-      const updatedUris = [...(app.redirectUris || []), newRedirectUrl.trim()]
-      const result = await updateOAuthAppRedirectUris(app.id, updatedUris)
-      
-      if (result.success) {
-        onRedirectUrisUpdate(app.id, updatedUris)
-        setNewRedirectUrl('')
-        setShowAddUrlDialog(false)
-        toast.success('Redirect URL added successfully')
-      } else {
-        toast.error(result.error || 'Failed to add redirect URL')
-      }
-    } catch (error) {
-      toast.error('Failed to add redirect URL')
-    } finally {
-      setIsUpdating(false)
-    }
-  }
-
-  const handleReinstallToUrl = (redirectUrl: string) => {
-    // Create a modified app object with only the selected redirect URL for reinstall
-    const modifiedApp = {
-      ...app,
-      redirectUris: [redirectUrl]
-    }
-    onInstall(modifiedApp)
-  }
-  
-  return (
-    <>
-      <Card className="p-6 border-transparent ring-1 ring-foreground/10">
-        <div className="relative">
-          <div className="space-y-4">
-            {svgUrl && (
-              <img 
-                src={svgUrl} 
-                alt={`${app.name} logo`}
-                className="size-12"
-              />
-            )}
-            <div className="space-y-2">
-              <h3 className="text-base font-medium">{app.name}</h3>
-              <p className="text-muted-foreground line-clamp-2 text-sm">
-                {app.description || 'OAuth application for Openship integration'}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-6 mt-6">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline"
-                  size="sm" 
-                  className="gap-1 pr-2"
-                >
-                  Reinstall
-                  <ChevronDown className="ml-0 !size-3.5 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {app.redirectUris?.map((uri, index) => (
-                  <DropdownMenuItem 
-                    key={index} 
-                    onClick={() => handleReinstallToUrl(uri)}
-                  >
-                    {uri}
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuItem onClick={() => setShowAddUrlDialog(true)}>
-                  <div className="flex items-center gap-2">
-                    <Plus className="size-4" />
-                    <span>Add new redirect URL</span>
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </Card>
-
-      {/* Add New Redirect URL Dialog */}
-      <Dialog open={showAddUrlDialog} onOpenChange={setShowAddUrlDialog}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add New Redirect URL</DialogTitle>
-            <DialogDescription>
-              Add a new redirect URL for {app.name}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div>
-              <Label htmlFor="redirect-url">Redirect URL</Label>
-              <Input
-                id="redirect-url"
-                value={newRedirectUrl}
-                onChange={(e) => setNewRedirectUrl(e.target.value)}
-                placeholder="https://example.com/oauth/callback"
-                disabled={isUpdating}
-                className="mt-2"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Enter the full URL where OAuth callbacks should be sent
-              </p>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <div className="flex gap-2 w-full">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowAddUrlDialog(false)
-                  setNewRedirectUrl('')
-                }}
-                disabled={isUpdating}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleAddRedirectUrl}
-                disabled={isUpdating || !newRedirectUrl.trim()}
-                className="flex-1"
-              >
-                {isUpdating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                Add URL
-              </Button>
-            </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
-  )
-}
-
-export function AppsPageClient({ existingApps = [] }: AppsPageClientProps) {
-  const router = useRouter()
-  const [activatedApps, setActivatedApps] = useState<string[]>([])
-  const [isMarketplaceDialogOpen, setIsMarketplaceDialogOpen] = useState(false)
-  const [selectedApp, setSelectedApp] = useState<AvailableApp | null>(null)
-  const [apps, setApps] = useState<ExistingApp[]>(existingApps)
-  
-
-  const handleInstallMarketplaceApp = useCallback((appId: string) => {
-    const app = AVAILABLE_APPS.find(a => a.id === appId)
-    if (app) {
-      setSelectedApp(app)
-      setIsMarketplaceDialogOpen(true)
-    }
-  }, [])
-
-  const handleRedirectUrisUpdate = useCallback((appId: string, redirectUris: string[]) => {
-    setApps(prevApps => 
-      prevApps.map(app => 
-        app.id === appId 
-          ? { ...app, redirectUris }
-          : app
-      )
-    )
-  }, [])
-
-
-  const handleInstall = useCallback((appOrDefault?: ExistingApp) => {
-    const app = appOrDefault
-    if (!app) {
-      console.error('No app provided to handleInstall');
+  const handleSaveMarketing = async () => {
+    if (!marketingData?.storeId) {
+      toast.error('Store record not found to save integrations.');
       return;
     }
-    console.log('🔴 INSTALL BUTTON CLICKED - handleInstall called with app:', app);
-    
-    // Check if app has redirect URI configured
-    if (!app.redirectUris || app.redirectUris.length === 0) {
-      console.log('🔴 ERROR: No redirect URIs found for app');
-      toast.error('No redirect URI configured for this app')
-      return
+
+    setIsSaving(true);
+    const updated = {
+      metaPixelId: metaPixelId.trim(),
+      metaCapiToken: metaCapiToken.trim(),
+      metaPixelEnabled,
+      googleAnalyticsId: googleAnalyticsId.trim(),
+      gaEnabled,
+      tiktokPixelId: tiktokPixelId.trim(),
+      gtmId: gtmId.trim(),
+    };
+
+    const res = await updateMarketingIntegrations(marketingData.storeId, updated);
+
+    if (res.success) {
+      toast.success('Marketing & Tracking Integrations published live!');
+    } else {
+      toast.error(res.error || 'Failed to save integrations.');
     }
-
-    console.log('🔴 App redirect URIs:', app.redirectUris);
-
-    // Build OAuth state (marketplace flow)
-    const state = JSON.stringify({
-      type: 'marketplace',
-      client_id: app.clientId,
-      client_secret: app.clientSecret,
-      app_name: app.name,
-      app_type: app.metadata?.type || 'shop', // Include app type for proper routing
-      adapter_slug: 'openfront', // Identifies which adapter to use for platform creation
-      nonce: crypto.randomUUID()
-    })
-
-    // Build URL parameters to show OAuth install dialog (same as when coming from Openship)
-    const searchParams = new URLSearchParams()
-    searchParams.set('install', 'true')
-    searchParams.set('client_id', app.clientId)
-    searchParams.set('scope', app.scopes.join(' '))
-    searchParams.set('redirect_uri', app.redirectUris[0])
-    searchParams.set('response_type', 'code')
-    searchParams.set('state', state)
-
-    console.log('🔴 Setting URL params to show OAuth dialog:', searchParams.toString())
-    
-    // Navigate with search params to trigger dialog without page refresh
-    router.push(`/dashboard/platform/apps?${searchParams.toString()}`)
-  }, [router])
-
-
+    setIsSaving(false);
+  };
 
   return (
-    <div className="px-4 md:px-6 pb-6">
-      {/* Marketplace Section */}
-      <div className="mb-8">
-        <h2 className="text-lg font-medium mb-4">Marketplace</h2>
-        <div className="grid gap-3 sm:grid-cols-2 max-w-2xl">
-          {AVAILABLE_APPS.map((app) => (
-            <AvailableAppCard
-              key={app.id}
-              app={app}
-              isActivated={activatedApps.includes(app.id)}
-              onActivate={() => handleInstallMarketplaceApp(app.id)}
-            />
-          ))}
-        </div>
-      </div>
+    <div className="p-4 md:p-6 space-y-6 max-w-6xl">
+      <Tabs defaultValue="marketing" className="space-y-6">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 w-full sm:w-[480px] p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+          <TabsTrigger value="marketing" className="gap-2 py-2">
+            <Activity className="w-4 h-4 text-blue-600" />
+            <span>Marketing & Pixels</span>
+          </TabsTrigger>
+          <TabsTrigger value="omnichannel" className="gap-2 py-2">
+            <Layers className="w-4 h-4 text-purple-600" />
+            <span>Fulfillment Apps</span>
+          </TabsTrigger>
+          <TabsTrigger value="developer" className="gap-2 py-2">
+            <Globe className="w-4 h-4 text-slate-600" />
+            <span>Custom OAuth</span>
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Installed Apps Section */}
-      <div>
-        <h2 className="text-lg font-medium mb-4">Installed</h2>
-        {apps.length === 0 ? (
-          <div className="text-muted-foreground text-sm">
-            No installed apps found. Install an app from the marketplace above to get started.
+        {/* TAB 1: MARKETING & AD PIXELS */}
+        <TabsContent value="marketing" className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold text-foreground">Marketing & Ad Attribution Pixels</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Connect Meta Pixel, Google Analytics 4, TikTok, and GTM for full-funnel e-commerce tracking.
+              </p>
+            </div>
+
+            <Button
+              onClick={handleSaveMarketing}
+              disabled={isSaving}
+              className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm gap-2"
+            >
+              <Save className="w-4 h-4" />
+              {isSaving ? 'Saving...' : 'Save & Publish Live'}
+            </Button>
           </div>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {apps.map((app) => (
-              <ExistingAppCard
-                key={app.id}
-                app={app}
-                onInstall={(appOverride) => handleInstall(appOverride || app)}
-                onRedirectUrisUpdate={handleRedirectUrisUpdate}
-              />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Meta (Facebook) Pixel & CAPI Card */}
+            <Card className="border-border">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-600/10 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 font-bold text-lg">
+                      f
+                    </div>
+                    <div>
+                      <CardTitle className="text-base">Meta (Facebook) Pixel</CardTitle>
+                      <CardDescription className="text-xs">
+                        Tracks full-funnel ad conversions & ROAS
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={metaPixelEnabled}
+                    onCheckedChange={setMetaPixelEnabled}
+                  />
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-0">
+                <div className="space-y-1.5">
+                  <Label htmlFor="meta-id" className="text-xs font-semibold">
+                    Pixel ID
+                  </Label>
+                  <Input
+                    id="meta-id"
+                    value={metaPixelId}
+                    onChange={(e) => setMetaPixelId(e.target.value)}
+                    placeholder="e.g. 123456789012345"
+                    className="font-mono text-xs"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Found in Meta Events Manager &rarr; Data Sources &rarr; Pixel ID.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="meta-capi" className="text-xs font-semibold">
+                    Conversions API (CAPI) Token <span className="text-muted-foreground font-normal">(Optional)</span>
+                  </Label>
+                  <Input
+                    id="meta-capi"
+                    type="password"
+                    value={metaCapiToken}
+                    onChange={(e) => setMetaCapiToken(e.target.value)}
+                    placeholder="EAAG..."
+                    className="font-mono text-xs"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    For server-side deduplication against ad-blockers.
+                  </p>
+                </div>
+
+                {/* Automated Tracking Status */}
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-foreground">Active Standard Events:</span>
+                    <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200">
+                      Full-Funnel
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
+                    <div className="flex items-center gap-1.5 text-foreground">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>PageView</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-foreground">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>ViewContent</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-foreground">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>AddToCart</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-foreground">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>InitiateCheckout</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-foreground col-span-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Purchase (Revenue, Tax, Shipping)</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Google Analytics 4 (GA4) Card */}
+            <Card className="border-border">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 font-bold text-lg">
+                      G
+                    </div>
+                    <div>
+                      <CardTitle className="text-base">Google Analytics 4 (GA4)</CardTitle>
+                      <CardDescription className="text-xs">
+                        Enhanced e-commerce conversion tracking
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={gaEnabled}
+                    onCheckedChange={setGaEnabled}
+                  />
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-0">
+                <div className="space-y-1.5">
+                  <Label htmlFor="ga4-id" className="text-xs font-semibold">
+                    Measurement ID
+                  </Label>
+                  <Input
+                    id="ga4-id"
+                    value={googleAnalyticsId}
+                    onChange={(e) => setGoogleAnalyticsId(e.target.value)}
+                    placeholder="e.g. G-XXXXXXXXXX"
+                    className="font-mono text-xs"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Found in Google Analytics &rarr; Admin &rarr; Data Streams.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="gtm-id" className="text-xs font-semibold">
+                    Google Tag Manager ID <span className="text-muted-foreground font-normal">(Optional)</span>
+                  </Label>
+                  <Input
+                    id="gtm-id"
+                    value={gtmId}
+                    onChange={(e) => setGtmId(e.target.value)}
+                    placeholder="e.g. GTM-XXXXXXX"
+                    className="font-mono text-xs"
+                  />
+                </div>
+
+                {/* GA4 e-commerce events */}
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-foreground">GA4 E-commerce Events:</span>
+                    <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-700 border-blue-200">
+                      Enhanced Stream
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
+                    <div className="flex items-center gap-1.5 text-foreground">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                      <span>page_view</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-foreground">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                      <span>view_item</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-foreground">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                      <span>add_to_cart</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-foreground">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                      <span>begin_checkout</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-foreground col-span-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                      <span>purchase (with transaction ID)</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* TikTok Pixel Card */}
+            <Card className="border-border md:col-span-2">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 font-bold text-lg">
+                      TT
+                    </div>
+                    <div>
+                      <CardTitle className="text-base">TikTok Ads Pixel</CardTitle>
+                      <CardDescription className="text-xs">
+                        Track viral TikTok shop campaigns and ad attribution
+                      </CardDescription>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="tiktok-id" className="text-xs font-semibold">
+                      TikTok Pixel ID
+                    </Label>
+                    <Input
+                      id="tiktok-id"
+                      value={tiktokPixelId}
+                      onChange={(e) => setTiktokPixelId(e.target.value)}
+                      placeholder="e.g. CXXXXXXXXXXXXXXX"
+                      className="font-mono text-xs"
+                    />
+                  </div>
+                  <div className="text-xs text-muted-foreground flex items-center">
+                    Enter your TikTok Pixel ID to automatically fire CompletePayment and AddToCart events from your campaigns.
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* TAB 2: OMNICHANNEL & FULFILLMENT APPS */}
+        <TabsContent value="omnichannel" className="space-y-6">
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Fulfillment & Marketplace Integrations</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Sync orders, multi-warehouse routing, and third-party logistics through Openship.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {AVAILABLE_APPS.map((app) => (
+              <Card key={app.id} className="p-6 border border-border flex flex-col justify-between gap-4">
+                <div className="space-y-3">
+                  <img src={app.svgUrl} alt={app.title} className="w-12 h-12" />
+                  <div>
+                    <h3 className="text-base font-bold text-foreground">{app.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{app.description}</p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => setInstallingApp(app)}
+                  className="w-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-semibold"
+                >
+                  Configure Integration
+                </Button>
+              </Card>
             ))}
           </div>
-        )}
-      </div>
+        </TabsContent>
 
-      {/* Marketplace Install Dialog */}
-      <MarketplaceInstallDialog 
-        isOpen={isMarketplaceDialogOpen}
-        onOpenChange={setIsMarketplaceDialogOpen}
-        app={selectedApp}
-      />
+        {/* TAB 3: DEVELOPER & OAUTH */}
+        <TabsContent value="developer" className="space-y-6">
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Custom OAuth & API Applications</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Manage OAuth client credentials, custom webhooks, and private API keys.
+            </p>
+          </div>
 
+          {existingApps.length === 0 ? (
+            <Card className="p-12 text-center border-dashed">
+              <p className="text-sm text-muted-foreground">No custom OAuth applications created yet.</p>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {existingApps.map((app) => (
+                <Card key={app.id} className="p-4 flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-semibold">{app.name}</h4>
+                    <p className="text-xs text-muted-foreground font-mono">Client ID: {app.clientId}</p>
+                  </div>
+                  <Badge variant={app.status === 'active' ? 'default' : 'secondary'}>
+                    {app.status}
+                  </Badge>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+
+      {/* Install Dialog */}
+      {installingApp && (
+        <MarketplaceInstallDialog
+          isOpen={true}
+          onClose={() => setInstallingApp(null)}
+          app={installingApp}
+        />
+      )}
     </div>
-  )
+  );
 }

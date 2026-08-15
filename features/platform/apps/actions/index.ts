@@ -4,6 +4,88 @@ import { revalidatePath } from 'next/cache'
 import { keystoneClient } from '../../../dashboard/lib/keystoneClient'
 import crypto from 'crypto'
 
+export async function getMarketingIntegrations() {
+  const query = `
+    query GetStoreIntegrations {
+      stores(take: 1) {
+        id
+        metadata
+      }
+    }
+  `
+
+  const response = await keystoneClient(query)
+
+  if (!response.success) {
+    return { success: false, error: response.error }
+  }
+
+  const store = response.data?.stores?.[0]
+  const analyticsConfig = store?.metadata?.analyticsConfig || {
+    metaPixelId: '',
+    metaCapiToken: '',
+    googleAnalyticsId: '',
+    tiktokPixelId: '',
+    gtmId: '',
+    metaPixelEnabled: true,
+    gaEnabled: true,
+  }
+
+  return {
+    success: true,
+    data: {
+      storeId: store?.id || '',
+      analyticsConfig,
+    },
+  }
+}
+
+export async function updateMarketingIntegrations(storeId: string, analyticsConfig: any) {
+  // First fetch current metadata
+  const getQuery = `
+    query GetStoreMeta($id: ID!) {
+      store(where: { id: $id }) {
+        id
+        metadata
+      }
+    }
+  `
+
+  const getRes = await keystoneClient(getQuery, { id: storeId })
+  const currentMetadata = getRes.data?.store?.metadata || {}
+
+  const updatedMetadata = {
+    ...currentMetadata,
+    analyticsConfig,
+  }
+
+  const updateMutation = `
+    mutation UpdateStoreAnalytics($id: ID!, $metadata: JSON!) {
+      updateStore(where: { id: $id }, data: { metadata: $metadata }) {
+        id
+        metadata
+      }
+    }
+  `
+
+  const response = await keystoneClient(updateMutation, {
+    id: storeId,
+    metadata: updatedMetadata,
+  })
+
+  if (!response.success) {
+    return { success: false, error: response.error }
+  }
+
+  try {
+    revalidatePath('/dashboard/platform/apps')
+    revalidatePath('/dashboard/platform/store')
+    revalidatePath('/', 'layout')
+  } catch (e) {}
+
+  return { success: true, data: response.data?.updateStore }
+}
+
 // Interface for OAuth app data
 export interface OAuthApp {
   id: string
