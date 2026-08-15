@@ -78,11 +78,6 @@ export const getProductsList = cache(async function ({
             currency {
               code
             }
-            calculatedPrice {
-              calculatedAmount
-              originalAmount
-              currencyCode
-            }
           }
         }
       }
@@ -133,15 +128,6 @@ export const retrievePricedProductById = cache(async function ({
             amount
             currency {
               code
-            }
-            calculatedPrice {
-              calculatedAmount
-              originalAmount
-              currencyCode
-              moneyAmountId
-              variantId
-              priceListId
-              priceListType
             }
           }
         }
@@ -214,11 +200,6 @@ export const getProductByHandle = cache(async function ({
             amount
             currency {
               code
-            }
-            calculatedPrice {
-              calculatedAmount
-              originalAmount
-              currencyCode
             }
           }
         }

@@ -58,15 +58,19 @@ export const Product = list({
       field: graphql.field({
         type: graphql.String,
         resolve: async (item, args, context) => {
-          const product = await context.query.Product.findOne({
-            where: { id: item.id },
-            query: "productImages(take: 1) { image { url } imagePath }",
-          });
-          return (
-            product.productImages[0]?.image?.url ||
-            product.productImages[0]?.imagePath ||
-            null
-          );
+          try {
+            const product = await context.query.Product.findOne({
+              where: { id: item.id },
+              query: "productImages(take: 1) { image { url } imagePath }",
+            });
+            return (
+              product?.productImages?.[0]?.image?.url ||
+              product?.productImages?.[0]?.imagePath ||
+              null
+            );
+          } catch (e) {
+            return null;
+          }
         },
       }),
     }),

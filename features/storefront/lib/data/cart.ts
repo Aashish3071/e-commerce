@@ -91,11 +91,6 @@ export async function createCart(data: Record<string, any> = {}) {
               currency {
                 code
               }
-              calculatedPrice {
-                calculatedAmount
-                originalAmount
-                currencyCode
-              }
             }
           }
         }

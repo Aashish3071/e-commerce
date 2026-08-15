@@ -33,14 +33,10 @@ export const getCollectionsList = cache(async function (offset = 0, limit = 3) {
             id
             title
             prices {
+              id
               amount
               currency {
                 code
-              }
-              calculatedPrice {
-                calculatedAmount
-                originalAmount
-                currencyCode
               }
             }
           }
@@ -50,15 +46,20 @@ export const getCollectionsList = cache(async function (offset = 0, limit = 3) {
     }
   `;
 
-  const data = await openfrontClient.request(GET_COLLECTIONS_LIST_QUERY, {
-    offset,
-    limit,
-  });
+  try {
+    const data = await openfrontClient.request(GET_COLLECTIONS_LIST_QUERY, {
+      offset,
+      limit,
+    });
 
-  return {
-    collections: data.productCollections,
-    count: data.productCollectionsCount,
-  };
+    return {
+      collections: data.productCollections || [],
+      count: data.productCollectionsCount || 0,
+    };
+  } catch (error) {
+    console.error("Error fetching collections list:", error);
+    return { collections: [], count: 0 };
+  }
 });
 
 export const getCollectionByHandle = cache(async function (handle: string) {
@@ -72,7 +73,12 @@ export const getCollectionByHandle = cache(async function (handle: string) {
     }
   `;
 
-  return openfrontClient.request(GET_COLLECTION_BY_HANDLE_QUERY, { handle });
+  try {
+    return await openfrontClient.request(GET_COLLECTION_BY_HANDLE_QUERY, { handle });
+  } catch (error) {
+    console.error("Error fetching collection by handle:", error);
+    return null;
+  }
 });
 
 export const getCollectionsListByRegion = cache(async function (
@@ -104,15 +110,7 @@ export const getCollectionsListByRegion = cache(async function (
             id
             title
             prices {
-              calculatedPrice {
-                calculatedAmount
-                originalAmount
-                currencyCode
-                moneyAmountId
-                variantId
-                priceListId
-                priceListType
-              }
+              id
               amount
               currency {
                 code
@@ -125,14 +123,19 @@ export const getCollectionsListByRegion = cache(async function (
     }
   `;
 
-  const data = await openfrontClient.request(GET_COLLECTIONS_LIST_QUERY, {
-    offset,
-    limit,
-    regionId,
-  });
+  try {
+    const data = await openfrontClient.request(GET_COLLECTIONS_LIST_QUERY, {
+      offset,
+      limit,
+      regionId,
+    });
 
-  return {
-    collections: data.productCollections,
-    count: data.productCollectionsCount,
-  };
+    return {
+      collections: data.productCollections || [],
+      count: data.productCollectionsCount || 0,
+    };
+  } catch (error) {
+    console.error("Error fetching collections by region:", error);
+    return { collections: [], count: 0 };
+  }
 });

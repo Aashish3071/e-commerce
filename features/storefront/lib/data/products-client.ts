@@ -28,11 +28,6 @@ export async function listProducts(params: {
             currency {
               code
             }
-            calculatedPrice {
-              calculatedAmount
-              originalAmount
-              currencyCode
-            }
           }
         }
         productCollections {
@@ -122,11 +117,6 @@ export async function getProductByHandle(handle: string) {
             currency {
               code
               symbol
-            }
-            calculatedPrice {
-              calculatedAmount
-              originalAmount
-              currencyCode
             }
           }
           options {

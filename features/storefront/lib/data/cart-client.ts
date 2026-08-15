@@ -50,11 +50,6 @@ const CART_QUERY = gql`
               code
               symbol
             }
-            calculatedPrice {
-              calculatedAmount
-              originalAmount
-              currencyCode
-            }
           }
         }
       }
