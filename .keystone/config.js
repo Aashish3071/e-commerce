@@ -15928,7 +15928,26 @@ function getChangedFields(original, updated) {
 }
 
 // features/keystone/index.ts
-var databaseURL = process.env.DATABASE_URL || process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || "file:./keystone.db";
+function getCleanDatabaseUrl() {
+  const candidates = [
+    process.env.DATABASE_URL,
+    process.env.POSTGRES_URL_NON_POOLING,
+    process.env.POSTGRES_PRISMA_URL,
+    process.env.POSTGRES_URL,
+  ];
+
+  for (const raw of candidates) {
+    if (!raw || typeof raw !== 'string') continue;
+    let cleaned = raw.trim();
+    cleaned = cleaned.replace(/^["']+|["']+$/g, '');
+    cleaned = cleaned.replace(/^psql\s+["']?/, '').replace(/["']?$/, '').trim();
+    if (cleaned.startsWith('postgresql://') || cleaned.startsWith('postgres://')) {
+      return cleaned;
+    }
+  }
+  return process.env.DATABASE_URL || "file:./keystone.db";
+}
+var databaseURL = getCleanDatabaseUrl();
 var listKey = "User";
 var basePath = "/dashboard";
 var DEFAULT_SESSION_SECRET = "openfront_production_session_secret_key_32_characters_minimum_entropy";

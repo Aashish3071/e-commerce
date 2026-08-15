@@ -17,12 +17,27 @@ import { withWebhooks } from "../webhooks/webhook-plugin";
 // import { RateLimiterMemory } from "rate-limiter-flexible";
 // import { applyRateLimiting } from "./applyRateLimiting";
 
-const databaseURL =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL_NON_POOLING ||
-  process.env.POSTGRES_PRISMA_URL ||
-  process.env.POSTGRES_URL ||
-  "file:./keystone.db";
+function getCleanDatabaseUrl() {
+  const candidates = [
+    process.env.DATABASE_URL,
+    process.env.POSTGRES_URL_NON_POOLING,
+    process.env.POSTGRES_PRISMA_URL,
+    process.env.POSTGRES_URL,
+  ];
+
+  for (const raw of candidates) {
+    if (!raw || typeof raw !== 'string') continue;
+    let cleaned = raw.trim();
+    cleaned = cleaned.replace(/^["']+|["']+$/g, '');
+    cleaned = cleaned.replace(/^psql\s+["']?/, '').replace(/["']?$/, '').trim();
+    if (cleaned.startsWith('postgresql://') || cleaned.startsWith('postgres://')) {
+      return cleaned;
+    }
+  }
+  return process.env.DATABASE_URL || "file:./keystone.db";
+}
+
+const databaseURL = getCleanDatabaseUrl();
 
 const listKey = "User";
 
