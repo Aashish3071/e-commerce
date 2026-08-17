@@ -3,6 +3,8 @@ import { Metadata } from "next"
 import FeaturedProducts from "@/features/storefront/modules/home/components/featured-products"
 import HeroBanner from "@/features/storefront/modules/home/components/hero-banner"
 import { CategoryPillsBar } from "@/features/storefront/modules/home/components/category-pills"
+import { CategoryShowcase } from "@/features/storefront/modules/home/components/category-showcase"
+import { FabricInnovation } from "@/features/storefront/modules/home/components/fabric-innovation"
 import { PromoCallout } from "@/features/storefront/modules/home/components/promo-callout"
 import { MarqueeTicker } from "@/features/storefront/modules/home/components/marquee-ticker"
 import { TrustBadges } from "@/features/storefront/modules/home/components/trust-badges"
@@ -18,8 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const store = await getStore()
 
   return {
-    title: store?.homepageTitle || "APEX STUDIO - Engineered Performance & Streetwear",
-    description: store?.homepageDescription || "Engineered for uncompromised performance and timeless daily wear.",
+    title: store?.homepageTitle || "APEX ATHLETICS - Engineered Activewear & Performance Apparel",
+    description: store?.homepageDescription || "Engineered activewear, seamless ribbed leggings, heavyweight hoodies, and technical layers.",
   }
 }
 
@@ -41,8 +43,8 @@ export async function HomePage(props: {
   }
 
   const heroSettings = store?.metadata?.heroBanner || {
-    headline: "ENGINEERED FOR UNCOMPROMISED PERFORMANCE",
-    subheadline: "Precision tailoring meets technical fabrics. Designed for durability, movement, and effortless everyday style.",
+    headline: "ENGINEERED FOR UNCOMPROMISED MOVEMENT",
+    subheadline: "Premium activewear, seamless ribbed leggings, and heavyweight hoodies engineered for studio workouts, running, and elevated daily wear.",
     badgeText: "SEASON 2026 DROP 01 LIVE",
     primaryCtaText: "Shop New Releases",
     primaryCtaLink: `/${countryCode}/store`,
@@ -77,7 +79,10 @@ export async function HomePage(props: {
         <MarqueeTicker />
       )}
 
-      {/* 4. Curated New Drops & Best Sellers Product Grid */}
+      {/* 4. Shop by Discipline & Category Visual Grid */}
+      <CategoryShowcase />
+
+      {/* 5. Curated Activewear Releases & Best Sellers */}
       <section className="py-16 sm:py-20 max-w-7xl mx-auto px-6 sm:px-12 w-full">
         <div className="flex flex-col gap-y-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -93,9 +98,9 @@ export async function HomePage(props: {
 
             <LocalizedClientLink
               href="/store"
-              className="text-xs font-black uppercase tracking-wider text-zinc-950 dark:text-white hover:text-blue-600 flex items-center gap-1 group shrink-0"
+              className="text-xs font-black uppercase tracking-wider text-zinc-950 dark:text-white hover:text-red-500 flex items-center gap-1 group shrink-0"
             >
-              <span>Explore All Products</span>
+              <span>Explore All Drops</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </LocalizedClientLink>
           </div>
@@ -106,15 +111,18 @@ export async function HomePage(props: {
         </div>
       </section>
 
-      {/* 5. Limited Drop VIP Promo Banner */}
+      {/* 6. Material Science & Fabric Innovation (Alo / Gymshark / Allbirds Story) */}
+      <FabricInnovation />
+
+      {/* 7. Limited Drop VIP Promo Banner */}
       <PromoCallout />
 
-      {/* 6. Community Verified Reviews */}
+      {/* 8. Community Verified Athlete Reviews */}
       {testimonialsSettings.enabled !== false && (
         <Testimonials />
       )}
 
-      {/* 7. 4 Trust & Guarantee Badges */}
+      {/* 9. 4 Trust & Guarantee Badges */}
       {trustBadgesSettings.enabled !== false && (
         <TrustBadges />
       )}
