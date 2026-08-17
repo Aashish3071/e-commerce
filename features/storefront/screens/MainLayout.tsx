@@ -14,8 +14,8 @@ export async function MainLayout({ children }: { children: React.ReactNode }) {
 
   const announcementConfig = store?.metadata?.announcementBar || {
     enabled: true,
-    text: "✨ Free express shipping on orders over $50 | 30-Day Money-Back Guarantee",
-    bgColor: "#0f172a",
+    text: "✨ BEAUTY BEGINS WITH TRUTH | Use WELCOME10 for 10% off your first purchase • Free shipping over $50",
+    bgColor: "#1c1917",
     textColor: "#ffffff",
   }
 
@@ -38,7 +38,6 @@ export async function MainLayout({ children }: { children: React.ReactNode }) {
       <Nav />
       {children}
       <Footer />
-      {!hideBranding && <OpenfrontCTA />}
     </StorefrontServer>
   )
 }

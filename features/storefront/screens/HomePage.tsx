@@ -3,6 +3,8 @@ import { Metadata } from "next"
 import FeaturedProducts from "@/features/storefront/modules/home/components/featured-products"
 import HeroBanner from "@/features/storefront/modules/home/components/hero-banner"
 import { CategoryShowcase } from "@/features/storefront/modules/home/components/category-showcase"
+import { RoutineBuilder } from "@/features/storefront/modules/home/components/routine-builder"
+import { BrandPhilosophy } from "@/features/storefront/modules/home/components/brand-philosophy"
 import { PromoCallout } from "@/features/storefront/modules/home/components/promo-callout"
 import { MarqueeTicker } from "@/features/storefront/modules/home/components/marquee-ticker"
 import { TrustBadges } from "@/features/storefront/modules/home/components/trust-badges"
@@ -16,8 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const store = await getStore()
 
   return {
-    title: store?.homepageTitle || "Modern Commerce Store",
-    description: store?.homepageDescription || "A high-performance e-commerce experience powered by Next.js and Openfront.",
+    title: store?.homepageTitle || "Paula's Choice Skincare - Best Science-Backed Beauty & Skin Care",
+    description: store?.homepageDescription || "At Paula's Choice beauty begins with truth. You deserve smart skin care choices. Fragrance-free, cruelty-free, and clinically proven.",
   }
 }
 
@@ -39,15 +41,15 @@ export async function HomePage(props: {
   }
 
   const heroSettings = store?.metadata?.heroBanner || {
-    headline: store?.homepageTitle || "Premium Modern Commerce Engineered for Quality",
-    subheadline: store?.homepageDescription || "Crafted with ethical materials and designed for durability. Discover next-generation essentials with zero compromise.",
-    badgeText: "New Season 2026 Collection",
-    primaryCtaText: "Explore Catalog",
+    headline: "Smart, Safe & Science-Backed Skincare",
+    subheadline: "Formulated with clinically proven active concentrations to transform your skin. 100% fragrance-free, cruelty-free, and backed by independent dermatological research.",
+    badgeText: "BEAUTY BEGINS WITH TRUTH",
+    primaryCtaText: "Shop Best Sellers",
     primaryCtaLink: `/${countryCode}/store`,
-    secondaryCtaText: "View Collections",
-    secondaryCtaLink: `/${countryCode}/collections`,
-    bgImageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=80",
-    overlayOpacity: 0.65,
+    secondaryCtaText: "Take Routine Quiz",
+    secondaryCtaLink: `/${countryCode}/store`,
+    bgImageUrl: "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=1920&q=85",
+    overlayOpacity: 0.45,
   }
 
   const marqueeSettings = store?.metadata?.marquee || {
@@ -63,28 +65,31 @@ export async function HomePage(props: {
   }
 
   return (
-    <div className="flex flex-col w-full overflow-hidden bg-background">
-      {/* 1. Odoo-Style Split Hero Section */}
+    <div className="flex flex-col w-full overflow-hidden bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-100">
+      {/* 1. Hero Spotlight */}
       <HeroBanner {...heroSettings} />
       
-      {/* 2. Infinite Marquee USP Ticker */}
+      {/* 2. Clinical Marquee */}
       {marqueeSettings.enabled !== false && (
         <MarqueeTicker />
       )}
 
-      {/* 3. Odoo-Style Category Showcase Tiles */}
+      {/* 3. Shop by Skin Concern */}
       <CategoryShowcase />
 
-      {/* 4. Curated Featured Products Grid */}
+      {/* 4. Curated Best Sellers & Award Winners */}
       <section className="py-16 sm:py-20 max-w-7xl mx-auto px-6 sm:px-12 w-full">
         <div className="flex flex-col gap-y-10">
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">
-              Handpicked Essentials
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400">
+              Dermatologist Recommended
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              Featured Products & Best Sellers
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-900 dark:text-white">
+              Award-Winning Best Sellers
             </h2>
+            <p className="text-xs sm:text-sm text-stone-500 max-w-xl">
+              Our most celebrated formulas, trusted by millions worldwide to deliver visible results without irritation.
+            </p>
           </div>
 
           <ul className="flex flex-col gap-y-16">
@@ -93,15 +98,21 @@ export async function HomePage(props: {
         </div>
       </section>
 
-      {/* 5. Odoo-Style Promotional Callout Banner */}
+      {/* 5. 3-Step Daily Routine Builder */}
+      <RoutineBuilder />
+
+      {/* 6. Brand Formulation Philosophy ("Beauty Begins with Truth") */}
+      <BrandPhilosophy />
+
+      {/* 7. Welcome Promo Offer */}
       <PromoCallout />
 
-      {/* 6. Customer Testimonials & Reviews */}
+      {/* 8. Customer Transformations & Verified Reviews */}
       {testimonialsSettings.enabled !== false && (
         <Testimonials />
       )}
 
-      {/* 7. Trust & Guarantees */}
+      {/* 9. 4 Clinical Standards & Trust Pillars */}
       {trustBadgesSettings.enabled !== false && (
         <TrustBadges />
       )}

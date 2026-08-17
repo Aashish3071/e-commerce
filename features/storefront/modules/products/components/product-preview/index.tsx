@@ -41,10 +41,10 @@ export default async function ProductPreview({
   return (
     <LocalizedClientLink
       href={`/products/${productPreview.handle}`}
-      className="group flex flex-col rounded-2xl border border-border/80 bg-card overflow-hidden hover:shadow-xl hover:border-blue-500/30 transition-all duration-300 h-full"
+      className="group flex flex-col rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 overflow-hidden hover:shadow-xl hover:border-stone-400 dark:hover:border-stone-700 transition-all duration-300 h-full"
     >
       {/* Product Image Box */}
-      <div className="relative aspect-square w-full overflow-hidden bg-slate-50 dark:bg-slate-900/50">
+      <div className="relative aspect-square w-full overflow-hidden bg-stone-50 dark:bg-stone-800/50 p-4">
         <Thumbnail
           thumbnail={productPreview.thumbnail}
           size="square"
@@ -52,18 +52,18 @@ export default async function ProductPreview({
           className="group-hover:scale-105 transition-transform duration-500 rounded-none bg-transparent p-0"
         />
 
-        {/* Badges */}
+        {/* Status Badge */}
         <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-900/90 text-white backdrop-blur-md shadow-sm">
-            Featured
+          <span className="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-stone-900 text-white shadow-sm">
+            Best Seller
           </span>
         </div>
 
         {/* Hover Quick Action Pill */}
         <div className="absolute inset-x-3 bottom-3 z-10 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-200">
-          <div className="w-full py-2.5 px-4 rounded-xl bg-background/95 backdrop-blur-md border border-border text-foreground text-xs font-semibold shadow-lg flex items-center justify-center gap-2 hover:bg-blue-600 hover:text-white transition-colors">
+          <div className="w-full py-2.5 px-4 rounded-lg bg-stone-900 text-white text-xs font-bold uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 hover:bg-stone-800 transition-colors">
             <Eye className="w-3.5 h-3.5" />
-            <span>View Product</span>
+            <span>View Details</span>
           </div>
         </div>
       </div>
@@ -72,36 +72,40 @@ export default async function ProductPreview({
       <div className="p-4 sm:p-5 flex flex-col justify-between flex-1 gap-3">
         <div className="space-y-1.5">
           {/* Rating */}
-          <div className="flex items-center gap-1 text-amber-500 text-xs">
+          <div className="flex items-center gap-1.5 text-amber-500 text-xs">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
+                <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               ))}
             </div>
-            <span className="text-[11px] font-bold text-foreground ml-1">4.9</span>
-            <span className="text-[11px] text-muted-foreground">(24)</span>
+            <span className="text-xs font-bold text-stone-900 dark:text-white">4.9</span>
+            <span className="text-xs text-stone-500">(1,240)</span>
           </div>
 
           {/* Title */}
-          <h3 className="text-sm font-bold text-foreground group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+          <h3 className="text-sm font-bold text-stone-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
             {productPreview.title}
           </h3>
+
+          <p className="text-[11px] text-stone-500">
+            Full Size • 118 ml / 4 fl. oz.
+          </p>
         </div>
 
         {/* Price & Action Row */}
-        <div className="pt-2 border-t border-border/60 flex items-center justify-between">
+        <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
           <div>
             {cheapestPrice ? (
-              <div className="text-sm font-extrabold text-foreground">
+              <div className="text-base font-extrabold text-stone-900 dark:text-white">
                 <PreviewPrice price={cheapestPrice} region={region} />
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground">Contact for price</p>
+              <p className="text-xs text-stone-500">Contact for price</p>
             )}
           </div>
 
-          <div className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-muted-foreground group-hover:bg-blue-600 group-hover:text-white transition-colors">
-            <ShoppingBag className="w-3.5 h-3.5" />
+          <div className="p-2 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-white group-hover:bg-stone-900 group-hover:text-white transition-colors">
+            <ShoppingBag className="w-4 h-4" />
           </div>
         </div>
       </div>
