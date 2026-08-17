@@ -42,8 +42,9 @@ export async function getBaseUrl(): Promise<string> {
     }
   }
 
-  // Production fallback - return empty string and let relative URLs work
-  return '';
+  // Local development fallback
+  const port = process.env.PORT || 3000;
+  return `http://localhost:${port}`;
 }
 
 /**

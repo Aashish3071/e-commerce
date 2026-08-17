@@ -2,6 +2,8 @@ import { Metadata } from "next"
 
 import FeaturedProducts from "@/features/storefront/modules/home/components/featured-products"
 import HeroBanner from "@/features/storefront/modules/home/components/hero-banner"
+import { CategoryShowcase } from "@/features/storefront/modules/home/components/category-showcase"
+import { PromoCallout } from "@/features/storefront/modules/home/components/promo-callout"
 import { MarqueeTicker } from "@/features/storefront/modules/home/components/marquee-ticker"
 import { TrustBadges } from "@/features/storefront/modules/home/components/trust-badges"
 import { Testimonials } from "@/features/storefront/modules/home/components/testimonials"
@@ -37,15 +39,15 @@ export async function HomePage(props: {
   }
 
   const heroSettings = store?.metadata?.heroBanner || {
-    headline: store?.homepageTitle || "Modern Commerce Engineered for Performance",
-    subheadline: store?.homepageDescription || "Explore our latest collection crafted with premium materials and sustainable design.",
-    badgeText: "New Season Collection 2026",
+    headline: store?.homepageTitle || "Premium Modern Commerce Engineered for Quality",
+    subheadline: store?.homepageDescription || "Crafted with ethical materials and designed for durability. Discover next-generation essentials with zero compromise.",
+    badgeText: "New Season 2026 Collection",
     primaryCtaText: "Explore Catalog",
     primaryCtaLink: `/${countryCode}/store`,
-    secondaryCtaText: "View Categories",
-    secondaryCtaLink: `/${countryCode}/categories`,
+    secondaryCtaText: "View Collections",
+    secondaryCtaLink: `/${countryCode}/collections`,
     bgImageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=80",
-    overlayOpacity: 0.55,
+    overlayOpacity: 0.65,
   }
 
   const marqueeSettings = store?.metadata?.marquee || {
@@ -61,21 +63,27 @@ export async function HomePage(props: {
   }
 
   return (
-    <>
+    <div className="flex flex-col w-full overflow-hidden bg-background">
+      {/* 1. Odoo-Style Split Hero Section */}
       <HeroBanner {...heroSettings} />
       
+      {/* 2. Infinite Marquee USP Ticker */}
       {marqueeSettings.enabled !== false && (
         <MarqueeTicker />
       )}
 
-      <div className="py-16 max-w-7xl mx-auto px-6 sm:px-12">
-        <div className="flex flex-col gap-y-12">
-          <div className="flex flex-col gap-2">
+      {/* 3. Odoo-Style Category Showcase Tiles */}
+      <CategoryShowcase />
+
+      {/* 4. Curated Featured Products Grid */}
+      <section className="py-16 sm:py-20 max-w-7xl mx-auto px-6 sm:px-12 w-full">
+        <div className="flex flex-col gap-y-10">
+          <div className="flex flex-col gap-1.5">
             <span className="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">
-              Curated Selection
+              Handpicked Essentials
             </span>
-            <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
-              Featured Collections
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+              Featured Products & Best Sellers
             </h2>
           </div>
 
@@ -83,15 +91,20 @@ export async function HomePage(props: {
             <FeaturedProducts collections={collections} region={region} />
           </ul>
         </div>
-      </div>
+      </section>
 
+      {/* 5. Odoo-Style Promotional Callout Banner */}
+      <PromoCallout />
+
+      {/* 6. Customer Testimonials & Reviews */}
       {testimonialsSettings.enabled !== false && (
         <Testimonials />
       )}
 
+      {/* 7. Trust & Guarantees */}
       {trustBadgesSettings.enabled !== false && (
         <TrustBadges />
       )}
-    </>
+    </div>
   )
 }
