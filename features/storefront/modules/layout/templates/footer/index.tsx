@@ -2,43 +2,43 @@ import { cn } from "@/lib/utils";
 import LocalizedClientLink from "@/features/storefront/modules/common/components/localized-client-link";
 import Logo from "@/features/storefront/modules/layout/components/logo";
 import { getStore } from "@/features/storefront/lib/data/store";
-import { Mail, ArrowRight, ShieldCheck, Heart, Leaf } from "lucide-react";
+import { Mail, ArrowRight, ShieldCheck, Zap, RotateCcw } from "lucide-react";
 
 export default async function Footer() {
   const store = await getStore();
-  const storeName = store?.name || "PAULA'S CHOICE";
+  const storeName = store?.name || "APEX STUDIO";
 
   return (
-    <footer className="border-t border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-950 text-stone-700 dark:text-stone-300 w-full">
-      {/* Top Newsletter & Club Section (Paula's Choice Style) */}
-      <div className="border-b border-stone-200 dark:border-stone-800 py-14">
+    <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-950 text-zinc-300 w-full">
+      {/* Top VIP Drop Alerts Bar */}
+      <div className="border-b border-zinc-800 py-14">
         <div className="max-w-7xl mx-auto px-6 sm:px-12 flex flex-col lg:flex-row items-center justify-between gap-8">
           <div className="space-y-2 text-center lg:text-left">
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400">
-              Join Our Skincare Community
+            <span className="text-[11px] font-black uppercase tracking-[0.25em] text-red-500">
+              VIP EARLY ACCESS
             </span>
-            <h3 className="text-xl sm:text-2xl font-extrabold text-stone-900 dark:text-white tracking-tight">
-              Get 10% Off Your First Purchase + Science-Backed Advice
+            <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight">
+              GET 20% OFF YOUR FIRST DROP ORDER
             </h3>
-            <p className="text-xs sm:text-sm text-stone-500 max-w-lg">
-              Receive expert skincare tips, routine guides, and VIP access to new clinical launches.
+            <p className="text-xs sm:text-sm text-zinc-400 max-w-lg">
+              Subscribe to unlock member-only capsule releases, restock alerts, and secret sales.
             </p>
           </div>
 
           <div className="flex items-center gap-2 w-full max-w-md">
             <div className="relative flex-1">
-              <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Mail className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
                 placeholder="Enter your email address"
-                className="w-full pl-10 pr-4 py-3 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-xs text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-stone-900"
+                className="w-full pl-10 pr-4 py-3 rounded-lg border border-zinc-800 bg-zinc-900 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-white"
               />
             </div>
             <button
               type="button"
-              className="px-6 py-3 rounded-lg bg-stone-900 hover:bg-stone-800 text-white dark:bg-white dark:text-stone-900 text-xs font-bold uppercase tracking-wider transition-colors shrink-0"
+              className="px-6 py-3 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-black uppercase tracking-widest transition-colors shrink-0"
             >
-              Sign Up
+              Join VIP
             </button>
           </div>
         </div>
@@ -50,117 +50,112 @@ export default async function Footer() {
           {/* Brand Info */}
           <div className="md:col-span-2 space-y-4">
             <Logo />
-            <p className="text-xs text-stone-500 max-w-sm leading-relaxed">
-              Formulated with clinically proven active concentrations to transform skin health. 100% fragrance-free, cruelty-free, and non-irritating.
+            <p className="text-xs text-zinc-400 max-w-sm leading-relaxed font-medium">
+              Engineered performance and luxury streetwear. Built with high-density technical fabrics for movement, durability, and daily comfort.
             </p>
-            <div className="flex items-center gap-4 text-xs font-semibold text-stone-600 dark:text-stone-400">
+            <div className="flex items-center gap-4 text-xs font-bold text-zinc-400">
               <span className="flex items-center gap-1">
-                <Leaf className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Fragrance-Free</span>
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                <span>24h Dispatch</span>
               </span>
               <span className="flex items-center gap-1">
-                <Heart className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Leaping Bunny</span>
+                <RotateCcw className="w-3.5 h-3.5 text-emerald-400" />
+                <span>30-Day Returns</span>
               </span>
               <span className="flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Non-Irritating</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                <span>SSL Encrypted</span>
               </span>
             </div>
           </div>
 
           {/* Shop */}
           <div className="space-y-3">
-            <h4 className="text-xs font-extrabold uppercase tracking-widest text-stone-900 dark:text-white">
-              Shop Skincare
+            <h4 className="text-xs font-black uppercase tracking-widest text-white">
+              Shop Drops
             </h4>
-            <ul className="space-y-2 text-xs text-stone-600 dark:text-stone-400">
+            <ul className="space-y-2 text-xs text-zinc-400">
               <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
-                  Best Sellers
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
+                  New Releases 🔥
                 </LocalizedClientLink>
               </li>
               <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
-                  Exfoliants & Peels
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
+                  Best Sellers ⚡
                 </LocalizedClientLink>
               </li>
               <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
-                  Serums & Boosters
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
+                  Outerwear & Jackets
                 </LocalizedClientLink>
               </li>
               <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
-                  Moisturizers & SPF
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
+                  Heavyweight Knitwear
                 </LocalizedClientLink>
               </li>
               <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
-                  Cleansers & Toners
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
+                  Accessories & Headwear
                 </LocalizedClientLink>
               </li>
             </ul>
           </div>
 
-          {/* Customer Care */}
+          {/* Customer Service */}
           <div className="space-y-3">
-            <h4 className="text-xs font-extrabold uppercase tracking-widest text-stone-900 dark:text-white">
+            <h4 className="text-xs font-black uppercase tracking-widest text-white">
               Customer Care
             </h4>
-            <ul className="space-y-2 text-xs text-stone-600 dark:text-stone-400">
+            <ul className="space-y-2 text-xs text-zinc-400">
               <li>
-                <LocalizedClientLink href="/account" className="hover:text-stone-900 dark:hover:text-white transition-colors">
+                <LocalizedClientLink href="/account" className="hover:text-white transition-colors">
                   Track My Order
                 </LocalizedClientLink>
               </li>
               <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
                   Shipping & Delivery
                 </LocalizedClientLink>
               </li>
               <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
-                  30-Day Money Back Guarantee
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
+                  30-Day Easy Returns
                 </LocalizedClientLink>
               </li>
               <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
-                  Contact Skincare Experts
-                </LocalizedClientLink>
-              </li>
-              <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
-                  FAQs & Help Center
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
+                  Help Center & FAQs
                 </LocalizedClientLink>
               </li>
             </ul>
           </div>
 
-          {/* Science & Truth */}
+          {/* About */}
           <div className="space-y-3">
-            <h4 className="text-xs font-extrabold uppercase tracking-widest text-stone-900 dark:text-white">
-              Science & Research
+            <h4 className="text-xs font-black uppercase tracking-widest text-white">
+              Brand & Sizing
             </h4>
-            <ul className="space-y-2 text-xs text-stone-600 dark:text-stone-400">
+            <ul className="space-y-2 text-xs text-zinc-400">
               <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
-                  Our Formulation Philosophy
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
+                  Fabric Innovation
                 </LocalizedClientLink>
               </li>
               <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
-                  Ingredient Dictionary
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
+                  Interactive Sizing Guide
                 </LocalizedClientLink>
               </li>
               <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
-                  Clinical Trial Results
-                </LocalizedClientLink>
-              </li>
-              <li>
-                <LocalizedClientLink href="/store" className="hover:text-stone-900 dark:hover:text-white transition-colors">
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
                   Sustainability Standards
+                </LocalizedClientLink>
+              </li>
+              <li>
+                <LocalizedClientLink href="/store" className="hover:text-white transition-colors">
+                  Store Locator
                 </LocalizedClientLink>
               </li>
             </ul>
@@ -168,8 +163,8 @@ export default async function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-14 pt-8 border-t border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
-          <p>© {new Date().getFullYear()} {storeName}. All rights reserved. Beauty Begins With Truth.</p>
+        <div className="mt-14 pt-8 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-medium">
+          <p>© {new Date().getFullYear()} {storeName}. All rights reserved. Engineered for Performance.</p>
           <div className="flex items-center gap-6">
             <span>Privacy Policy</span>
             <span>Terms of Service</span>

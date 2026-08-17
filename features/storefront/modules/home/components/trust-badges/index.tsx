@@ -1,44 +1,44 @@
-import { FlaskConical, Leaf, Heart, ShieldCheck } from 'lucide-react';
+import { Zap, RotateCcw, ShieldCheck, Star } from 'lucide-react';
 
 const PILLARS = [
   {
-    icon: FlaskConical,
-    title: 'Research-Backed Actives',
-    description: 'Optimal concentrations of BHA, Niacinamide, Vitamin C, and Retinoids backed by published clinical trials.',
+    icon: Zap,
+    title: 'Lightning 24h Dispatch',
+    description: 'Orders placed before 2 PM ship the same business day with real-time tracking.',
   },
   {
-    icon: Leaf,
-    title: '100% Fragrance-Free',
-    description: 'Formulated without synthetic perfumes, essential oils, or dyes that cause hidden skin damage.',
-  },
-  {
-    icon: Heart,
-    title: 'Cruelty-Free Certified',
-    description: 'Leaping Bunny certified. We never test on animals or use ingredients from animal testing.',
+    icon: RotateCcw,
+    title: '30-Day Easy Returns',
+    description: 'Hassle-free automated return portal. Free size exchanges on all domestic orders.',
   },
   {
     icon: ShieldCheck,
-    title: 'Dermatologist Tested',
-    description: 'Every formula is rigorously tested for irritation and efficacy across sensitive skin types.',
+    title: '256-Bit SSL Checkout',
+    description: 'Bank-grade encryption supporting Apple Pay, Google Pay, Visa, Mastercard, and Amex.',
+  },
+  {
+    icon: Star,
+    title: '25,000+ 5-Star Reviews',
+    description: 'Trusted by athletes and creators worldwide for premium fit and durability.',
   },
 ];
 
 export function TrustBadges() {
   return (
-    <section className="border-y border-stone-200 dark:border-stone-800 bg-stone-50/80 dark:bg-stone-900/40 py-12">
+    <section className="border-y border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 py-14">
       <div className="max-w-7xl mx-auto px-6 sm:px-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {PILLARS.map((pillar, idx) => {
             const Icon = pillar.icon;
             return (
               <div key={idx} className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-2.5">
-                <div className="w-11 h-11 rounded-xl bg-stone-900 text-white dark:bg-white dark:text-stone-900 flex items-center justify-center shadow-sm shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center shadow-md shrink-0">
                   <Icon className="w-5 h-5" />
                 </div>
-                <h4 className="text-sm font-bold tracking-tight text-stone-900 dark:text-white uppercase">
+                <h4 className="text-sm font-black tracking-tight text-zinc-950 dark:text-white uppercase">
                   {pillar.title}
                 </h4>
-                <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
                   {pillar.description}
                 </p>
               </div>

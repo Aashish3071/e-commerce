@@ -14,8 +14,8 @@ export async function MainLayout({ children }: { children: React.ReactNode }) {
 
   const announcementConfig = store?.metadata?.announcementBar || {
     enabled: true,
-    text: "✨ BEAUTY BEGINS WITH TRUTH | Use WELCOME10 for 10% off your first purchase • Free shipping over $50",
-    bgColor: "#1c1917",
+    text: "⚡ SEASON 2026 DROP 01 LIVE • USE CODE: DROP20 FOR 20% OFF • FREE EXPRESS SHIPPING OVER $50",
+    bgColor: "#09090b",
     textColor: "#ffffff",
   }
 

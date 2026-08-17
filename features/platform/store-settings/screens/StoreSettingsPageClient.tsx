@@ -21,6 +21,7 @@ import {
   Store as StoreIcon,
   Activity,
   ArrowRight,
+  Flame,
 } from 'lucide-react';
 
 interface StoreSettingsPageClientProps {
@@ -41,7 +42,7 @@ export function StoreSettingsPageClient({
   initialError,
 }: StoreSettingsPageClientProps) {
   // Store Branding
-  const [name, setName] = useState(initialData?.name || "PAULA'S CHOICE");
+  const [name, setName] = useState(initialData?.name || "APEX STUDIO");
   const [logoIcon, setLogoIcon] = useState(
     initialData?.logoIcon || LOGO_ICONS[0].lightSvg
   );
@@ -56,13 +57,13 @@ export function StoreSettingsPageClient({
   );
   const [announcementText, setAnnouncementText] = useState(
     metadata.announcementBar?.text ||
-      '✨ BEAUTY BEGINS WITH TRUTH | Use WELCOME10 for 10% off your first purchase • Free shipping over $50'
+      '⚡ SEASON 2026 DROP 01 LIVE • USE CODE: DROP20 FOR 20% OFF • FREE EXPRESS SHIPPING OVER $50'
   );
   const [announcementLink, setAnnouncementLink] = useState(
     metadata.announcementBar?.linkUrl || '/store'
   );
   const [announcementBg, setAnnouncementBg] = useState(
-    metadata.announcementBar?.bgColor || '#1c1917'
+    metadata.announcementBar?.bgColor || '#09090b'
   );
   const [announcementTextCol, setAnnouncementTextCol] = useState(
     metadata.announcementBar?.textColor || '#ffffff'
@@ -72,31 +73,31 @@ export function StoreSettingsPageClient({
   const [heroHeadline, setHeroHeadline] = useState(
     metadata.heroBanner?.headline ||
       initialData?.homepageTitle ||
-      'Smart, Safe & Science-Backed Skincare'
+      'ENGINEERED FOR UNCOMPROMISED PERFORMANCE'
   );
   const [heroSubheadline, setHeroSubheadline] = useState(
     metadata.heroBanner?.subheadline ||
       initialData?.homepageDescription ||
-      'Formulated with clinically proven active concentrations to transform your skin. 100% fragrance-free, cruelty-free, and backed by independent dermatological research.'
+      'Precision tailoring meets technical fabrics. Designed for durability, movement, and effortless everyday style.'
   );
   const [heroBadge, setHeroBadge] = useState(
-    metadata.heroBanner?.badgeText || 'BEAUTY BEGINS WITH TRUTH'
+    metadata.heroBanner?.badgeText || 'SEASON 2026 DROP 01 LIVE'
   );
   const [heroPrimaryCtaText, setHeroPrimaryCtaText] = useState(
-    metadata.heroBanner?.primaryCtaText || 'Shop Best Sellers'
+    metadata.heroBanner?.primaryCtaText || 'Shop New Releases'
   );
   const [heroPrimaryCtaLink, setHeroPrimaryCtaLink] = useState(
     metadata.heroBanner?.primaryCtaLink || '/store'
   );
   const [heroSecondaryCtaText, setHeroSecondaryCtaText] = useState(
-    metadata.heroBanner?.secondaryCtaText || 'Take Routine Quiz'
+    metadata.heroBanner?.secondaryCtaText || 'Explore Best Sellers'
   );
   const [heroSecondaryCtaLink, setHeroSecondaryCtaLink] = useState(
     metadata.heroBanner?.secondaryCtaLink || '/store'
   );
   const [heroBgImage, setHeroBgImage] = useState(
     metadata.heroBanner?.bgImageUrl ||
-      'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=1920&q=85'
+      'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1920&q=85'
   );
 
   // Section Toggles
@@ -181,18 +182,18 @@ export function StoreSettingsPageClient({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <StoreIcon className="w-6 h-6 text-stone-900 dark:text-stone-100" />
+            <StoreIcon className="w-6 h-6 text-zinc-950 dark:text-zinc-100" />
             Visual Theme & Storefront Customizer
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Customize branding, announcement banners, and modular skincare homepage sections.
+            Customize branding, announcement banners, and modular high-conversion homepage sections.
           </p>
         </div>
 
         <Button
           onClick={handleSave}
           disabled={isLoading}
-          className="gap-2 bg-stone-900 hover:bg-stone-800 text-white dark:bg-white dark:text-stone-900 shadow-sm"
+          className="gap-2 bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:text-zinc-950 shadow-sm"
         >
           <Save className="w-4 h-4" />
           {isLoading ? 'Publishing...' : 'Save & Publish Live'}
@@ -200,9 +201,9 @@ export function StoreSettingsPageClient({
       </div>
 
       {/* Quick link banner to Integrations */}
-      <div className="p-4 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="p-4 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-stone-900 text-white dark:bg-white dark:text-stone-900 shrink-0">
+          <div className="p-2 rounded-lg bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shrink-0">
             <Activity className="w-4 h-4" />
           </div>
           <div>
@@ -213,7 +214,7 @@ export function StoreSettingsPageClient({
           </div>
         </div>
 
-        <Button asChild variant="outline" size="sm" className="text-xs shrink-0 gap-1.5 border-stone-300">
+        <Button asChild variant="outline" size="sm" className="text-xs shrink-0 gap-1.5 border-zinc-300">
           <Link href="/dashboard/platform/apps">
             <span>Manage Integrations</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -223,7 +224,7 @@ export function StoreSettingsPageClient({
 
       {/* Tabs */}
       <Tabs defaultValue="sections" className="space-y-6">
-        <TabsList className="grid grid-cols-3 w-full sm:w-[480px] p-1 bg-stone-100 dark:bg-stone-900 rounded-xl">
+        <TabsList className="grid grid-cols-3 w-full sm:w-[480px] p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl">
           <TabsTrigger value="sections" className="gap-2 py-2.5">
             <LayoutTemplate className="w-4 h-4" />
             <span>Sections</span>
@@ -259,7 +260,7 @@ export function StoreSettingsPageClient({
                     id="hero-badge"
                     value={heroBadge}
                     onChange={(e) => setHeroBadge(e.target.value)}
-                    placeholder="e.g. BEAUTY BEGINS WITH TRUTH"
+                    placeholder="e.g. SEASON 2026 DROP 01 LIVE"
                   />
                 </div>
 
@@ -280,7 +281,7 @@ export function StoreSettingsPageClient({
                   id="hero-headline"
                   value={heroHeadline}
                   onChange={(e) => setHeroHeadline(e.target.value)}
-                  placeholder="e.g. Smart, Safe & Science-Backed Skincare"
+                  placeholder="e.g. ENGINEERED FOR UNCOMPROMISED PERFORMANCE"
                 />
               </div>
 
@@ -291,7 +292,7 @@ export function StoreSettingsPageClient({
                   value={heroSubheadline}
                   onChange={(e) => setHeroSubheadline(e.target.value)}
                   rows={2}
-                  placeholder="e.g. Formulated with clinically proven active concentrations..."
+                  placeholder="e.g. Precision tailoring meets technical fabrics..."
                 />
               </div>
 
@@ -302,7 +303,7 @@ export function StoreSettingsPageClient({
                     id="primary-cta-text"
                     value={heroPrimaryCtaText}
                     onChange={(e) => setHeroPrimaryCtaText(e.target.value)}
-                    placeholder="e.g. Shop Best Sellers"
+                    placeholder="e.g. Shop New Releases"
                   />
                 </div>
                 <div className="space-y-2">
@@ -321,7 +322,7 @@ export function StoreSettingsPageClient({
                     id="secondary-cta-text"
                     value={heroSecondaryCtaText}
                     onChange={(e) => setHeroSecondaryCtaText(e.target.value)}
-                    placeholder="e.g. Take Routine Quiz"
+                    placeholder="e.g. Explore Best Sellers"
                   />
                 </div>
                 <div className="space-y-2">
@@ -348,9 +349,9 @@ export function StoreSettingsPageClient({
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-xl border border-border">
                 <div className="space-y-0.5">
-                  <Label className="text-sm font-semibold">Clinical Standards Marquee Ticker</Label>
+                  <Label className="text-sm font-semibold">Urgency Marquee Ticker</Label>
                   <p className="text-xs text-muted-foreground">
-                    Displays scrolling clinical points (100% Fragrance-Free, Leaping Bunny Cruelty-Free, Dermatologist Tested).
+                    Displays scrolling urgency points (24h Priority Dispatch, 30-Day Returns, Encrypted Checkout).
                   </p>
                 </div>
                 <Switch
@@ -361,9 +362,9 @@ export function StoreSettingsPageClient({
 
               <div className="flex items-center justify-between p-4 rounded-xl border border-border">
                 <div className="space-y-0.5">
-                  <Label className="text-sm font-semibold">Verified Customer Reviews</Label>
+                  <Label className="text-sm font-semibold">Community Verified Reviews</Label>
                   <p className="text-xs text-muted-foreground">
-                    Displays real customer transformations with 5-star ratings and skin concerns.
+                    Displays real customer ratings and fabric reviews for social proof.
                   </p>
                 </div>
                 <Switch
@@ -374,9 +375,9 @@ export function StoreSettingsPageClient({
 
               <div className="flex items-center justify-between p-4 rounded-xl border border-border">
                 <div className="space-y-0.5">
-                  <Label className="text-sm font-semibold">4 Clinical Standards Pillars</Label>
+                  <Label className="text-sm font-semibold">4 High-Velocity Guarantees</Label>
                   <p className="text-xs text-muted-foreground">
-                    Highlights Research-Backed Actives, Fragrance-Free, Leaping Bunny, and Dermatologist Tested.
+                    Highlights Lightning Dispatch, 30-Day Easy Returns, 256-Bit SSL, and 25k+ Reviews.
                   </p>
                 </div>
                 <Switch
@@ -396,7 +397,7 @@ export function StoreSettingsPageClient({
                 <div>
                   <CardTitle className="text-lg">Top Announcement Bar</CardTitle>
                   <CardDescription>
-                    Promote free shipping thresholds, discount codes, or seasonal announcements.
+                    Promote drop launches, discount codes, or shipping thresholds.
                   </CardDescription>
                 </div>
                 <Switch
@@ -412,7 +413,7 @@ export function StoreSettingsPageClient({
                   id="announcement-text"
                   value={announcementText}
                   onChange={(e) => setAnnouncementText(e.target.value)}
-                  placeholder="e.g. ✨ BEAUTY BEGINS WITH TRUTH | Use WELCOME10 for 10% off"
+                  placeholder="e.g. ⚡ SEASON 2026 DROP 01 LIVE • USE CODE: DROP20"
                 />
               </div>
 
@@ -494,7 +495,7 @@ export function StoreSettingsPageClient({
                   id="store-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. PAULA'S CHOICE"
+                  placeholder="e.g. APEX STUDIO"
                 />
               </div>
             </CardContent>

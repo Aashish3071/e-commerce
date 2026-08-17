@@ -3,22 +3,22 @@ import { getStore } from '@/features/storefront/lib/data/store';
 
 export default async function Logo() {
   const store = await getStore();
-  const storeName = store?.name || "PAULA'S CHOICE";
+  const storeName = store?.name || "APEX STUDIO";
 
   return (
     <LocalizedClientLink
       href="/"
-      className="flex flex-col items-start hover:opacity-90 transition-opacity cursor-pointer group"
+      className="flex items-center gap-2 hover:opacity-90 transition-opacity cursor-pointer group"
       data-testid="nav-store-link"
     >
-      <div className="flex items-center gap-1.5">
-        <span className="font-extrabold tracking-[0.18em] text-sm sm:text-base text-zinc-900 dark:text-zinc-50 uppercase font-sans">
+      <div className="flex flex-col items-start">
+        <span className="font-black tracking-[-0.04em] text-lg sm:text-xl text-zinc-950 dark:text-zinc-50 uppercase font-sans leading-none">
           {storeName}
         </span>
+        <span className="text-[9px] tracking-[0.25em] text-zinc-500 font-extrabold uppercase mt-0.5">
+          ENGINEERED ESSENTIALS
+        </span>
       </div>
-      <span className="text-[9px] tracking-[0.25em] text-zinc-500 font-semibold uppercase -mt-0.5">
-        SKINCARE & CLINICAL SCIENCE
-      </span>
     </LocalizedClientLink>
   );
 }
